@@ -1,0 +1,17 @@
+version: '3'
+
+services:
+  mailserver:
+    build: .
+    container_name: mailserver
+    ports:
+      - "25:25"
+      - "587:587"
+      - "465:465"
+    environment:
+      - DOMAIN=tu-dominio.com
+      - EMAIL=tu_email@tu-dominio.com
+    volumes:
+      - /etc/letsencrypt:/etc/letsencrypt
+      - /var/log/mail:/var/log/mail
+    restart: unless-stopped
