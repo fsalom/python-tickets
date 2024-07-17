@@ -2,7 +2,7 @@ version: '3'
 
 services:
   mailserver:
-    build: .
+    build: _docker
     container_name: mailserver
     ports:
       - "25:25"
