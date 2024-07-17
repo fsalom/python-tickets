@@ -23,7 +23,7 @@ jobs:
       run: sudo apt-get install -y openssh-client
 
     - name: Copy Docker Compose file to server
-      run: scp -o StrictHostKeyChecking=no -i ${{ secrets.DROPLET_SSH_KEY }} docker-compose.yml ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_IP }}:/path/to/your/project
+      run: scp -o StrictHostKeyChecking=no -i ${{ secrets.DROPLET_SSH_KEY }} docker-compose.yml ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_IP }}:/root/mailserver
 
     - name: Save Docker image and load on server
       run: |
