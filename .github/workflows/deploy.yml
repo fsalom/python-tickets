@@ -22,22 +22,28 @@ jobs:
     - name: Install SSH client and sshpass
       run: sudo apt-get install -y openssh-client sshpass
 
-    - name: Start ssh-agent and add key
+    - name: Start ssh-agent
+      id: ssh-agent
+      run: eval $(ssh-agent -s)
+
+    - name: Add SSH key using sshpass
       run: |
-        eval $(ssh-agent -s)
-        ssh-add <(echo "${{ secrets.DROPLET_SSH_KEY }}") <<< "${{ secrets.SSH_PASSPHRASE }}"
+        echo "${{ secrets.DROPLET_SSH_KEY }}" > key.pem
+        chmod 600 key.pem
+        sshpass -p "${{ secrets.SSH_PASSPHRASE }}" ssh-add key.pem
+        rm key.pem
       env:
         SSH_PASSPHRASE: ${{ secrets.SSH_PASSPHRASE }}
 
     - name: Create project directory on server if not exists
-      run: ssh -o StrictHostKeyChecking=no "${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_IP }}" "mkdir -p /root/mailserver"
+      run: ssh -o StrictHostKeyChecking=no -i "${{ secrets.DROPLET_SSH_KEY }}" "${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_IP }}" "mkdir -p /root/mailserver"
 
     - name: Copy Docker Compose file to server
-      run: scp -o StrictHostKeyChecking=no docker-compose.yml "${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_IP }}:/root/mailserver"
+      run: scp -o StrictHostKeyChecking=no -i "${{ secrets.DROPLET_SSH_KEY }}" docker-compose.yml "${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_IP }}:/root/mailserver"
 
     - name: Save Docker image and load on server
       run: |
-        docker save myapp:latest | bzip2 | ssh -o StrictHostKeyChecking=no "${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_IP }}" 'bunzip2 | docker load'
+        docker save myapp:latest | bzip2 | ssh -o StrictHostKeyChecking=no -i "${{ secrets.DROPLET_SSH_KEY }}" "${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_IP }}" 'bunzip2 | docker load'
 
     - name: Deploy application
       uses: appleboy/ssh-action@v0.1.3
