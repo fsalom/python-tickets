@@ -26,20 +26,17 @@ jobs:
       id: ssh-agent
       run: |
         eval $(ssh-agent -s)
-        echo "${{ secrets.DROPLET_SSH_KEY }}" > key.pem
-        chmod 600 key.pem
-        ssh-add key.pem
-        rm key.pem
+        echo "${{ secrets.DROPLET_SSH_KEY }}" | tr -d '\r' | ssh-add - 
 
     - name: Create project directory on server if not exists
-      run: ssh -o StrictHostKeyChecking=no -i key.pem "${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_IP }}" "mkdir -p /root/mailserver"
+      run: ssh -o StrictHostKeyChecking=no -i "${{ secrets.DROPLET_SSH_KEY }}" "${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_IP }}" "mkdir -p /root/mailserver"
 
     - name: Copy Docker Compose file to server
-      run: scp -o StrictHostKeyChecking=no -i key.pem docker-compose.yml "${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_IP }}:/root/mailserver"
+      run: scp -o StrictHostKeyChecking=no -i "${{ secrets.DROPLET_SSH_KEY }}" docker-compose.yml "${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_IP }}:/root/mailserver"
 
     - name: Save Docker image and load on server
       run: |
-        docker save myapp:latest | bzip2 | ssh -o StrictHostKeyChecking=no -i key.pem "${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_IP }}" 'bunzip2 | docker load'
+        docker save myapp:latest | bzip2 | ssh -o StrictHostKeyChecking=no -i "${{ secrets.DROPLET_SSH_KEY }}" "${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_IP }}" 'bunzip2 | docker load'
 
     - name: Deploy application
       uses: appleboy/ssh-action@v0.1.3
