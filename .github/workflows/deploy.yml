@@ -19,21 +19,14 @@ jobs:
     - name: Build Docker image
       run: docker build -t myapp:latest .
 
-    - name: Install SSH client and sshpass
-      run: sudo apt-get install -y openssh-client sshpass
+    - name: Install SSH client
+      run: sudo apt-get install -y openssh-client
 
     - name: Start ssh-agent
       id: ssh-agent
-      run: eval $(ssh-agent -s)
-
-    - name: Add SSH key using sshpass
       run: |
-        echo "${{ secrets.DROPLET_SSH_KEY }}" > key.pem
-        chmod 600 key.pem
-        sshpass -p "${{ secrets.SSH_PASSPHRASE }}" ssh-add key.pem
-        rm key.pem
-      env:
-        SSH_PASSPHRASE: ${{ secrets.SSH_PASSPHRASE }}
+        eval $(ssh-agent -s)
+        echo "${{ secrets.DROPLET_SSH_KEY }}" | tr -d '\r' | ssh-add -
 
     - name: Create project directory on server if not exists
       run: ssh -o StrictHostKeyChecking=no -i "${{ secrets.DROPLET_SSH_KEY }}" "${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_IP }}" "mkdir -p /root/mailserver"
