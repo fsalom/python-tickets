@@ -26,7 +26,10 @@ jobs:
       id: ssh-agent
       run: |
         eval $(ssh-agent -s)
-        echo "${{ secrets.DROPLET_SSH_KEY }}" | tr -d '\r' | ssh-add -
+        echo "${{ secrets.DROPLET_SSH_KEY }}" | tr -d '\r' > key.pem
+        chmod 600 key.pem
+        ssh-add key.pem
+        rm key.pem
 
     - name: Create project directory on server if not exists
       run: ssh -o StrictHostKeyChecking=no -i "${{ secrets.DROPLET_SSH_KEY }}" "${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_IP }}" "mkdir -p /root/mailserver"
