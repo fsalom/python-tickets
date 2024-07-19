@@ -22,12 +22,16 @@ jobs:
     - name: Install SSH client and sshpass
       run: sudo apt-get install -y openssh-client sshpass
 
-    - name: Start ssh-agent and add key
+    - name: Start ssh-agent
+      id: ssh-agent
+      run: eval $(ssh-agent -s)
+
+    - name: Add SSH key
       run: |
-        eval $(ssh-agent -s)
-        ssh-add <(echo "${{ secrets.DROPLET_SSH_KEY }}") <<< "${{ secrets.SSH_PASSPHRASE }}"
-      env:
-        SSH_PASSPHRASE: ${{ secrets.SSH_PASSPHRASE }}
+        echo "${{ secrets.DROPLET_SSH_KEY }}" > key.pem
+        chmod 600 key.pem
+        ssh-add key.pem
+        rm key.pem
 
     - name: Create project directory on server if not exists
       run: ssh -o StrictHostKeyChecking=no "${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_IP }}" "mkdir -p /root/mailserver"
