@@ -12,16 +12,13 @@ class MailServer(MailServerPort):
         print('Mail from:', envelope.mail_from)
         print('Rcpt to:', envelope.rcpt_tos)
 
-        # Procesar el mensaje
         msg = message_from_bytes(envelope.content)
 
-        # Decodificar el asunto
         subject, encoding = decode_header(msg['Subject'])[0]
         if isinstance(subject, bytes):
             subject = subject.decode(encoding if encoding else 'utf-8')
         print("Asunto:", subject)
 
-        # Procesar el cuerpo del mensaje y los adjuntos
         if msg.is_multipart():
             for part in msg.walk():
                 content_type = part.get_content_type()
