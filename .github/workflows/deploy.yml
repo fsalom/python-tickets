@@ -27,6 +27,9 @@ jobs:
         echo "${{ secrets.DROPLET_SSH_KEY }}" | tr -d '\r' > key.pem
         chmod 600 key.pem
 
+    - name: Ensure bunzip2 is installed on the server
+      run: ssh -o StrictHostKeyChecking=no -i key.pem "${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_IP }}" "sudo apt-get update && sudo apt-get install -y bzip2"
+
     - name: Create project directory on server if not exists
       run: ssh -o StrictHostKeyChecking=no -i key.pem "${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_IP }}" "mkdir -p /root/mailserver"
 
