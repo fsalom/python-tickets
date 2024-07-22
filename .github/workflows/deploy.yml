@@ -34,15 +34,13 @@ jobs:
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "
         command -v apt-get && apt-get update && apt-get install -y docker-compose || \
         command -v yum && yum install -y docker-compose || \
-        command -v apk && apk add --no-cache docker-compose
-      "
+        command -v apk && apk add --no-cache docker-compose"
 
     - name: Ensure bunzip2 is installed on the server
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "
         command -v apt-get && apt-get update && apt-get install -y bzip2 || \
         command -v yum && yum install -y bzip2 || \
-        command -v apk && apk add --no-cache bzip2
-      "
+        command -v apk && apk add --no-cache bzip2"
 
     - name: Create project directory on server if not exists
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "mkdir -p /root/mailserver"
@@ -61,8 +59,7 @@ jobs:
       run: ssh -o StrictHostKeyChecking-no -i key.pem root@"${{ secrets.DROPLET_IP }}" "
         cd /root/mailserver && \
         docker-compose down && \
-        docker-compose up -d
-      "
+        docker-compose up -d"
 
     - name: Clean up SSH key
       run: rm -f key.pem
