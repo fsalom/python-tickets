@@ -36,8 +36,11 @@ jobs:
     - name: Copy Docker Compose file to server
       run: scp -o StrictHostKeyChecking=no -i key.pem docker-compose.yml "${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_IP }}:/root/mailserver"
 
+    - name: List files for debugging
+      run: ls -la
+  
     - name: Copy Docker build context to server
-      run: scp -r -o StrictHostKeyChecking=no -i key.pem ./_docker "${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_IP }}:/root/mailserver"
+      run: scp -r -o StrictHostKeyChecking=no -i key.pem ./path/to/_docker "${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_IP }}:/root/mailserver"
 
     - name: Save Docker image and load on server
       run: |
