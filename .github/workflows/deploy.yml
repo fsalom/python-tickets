@@ -27,20 +27,20 @@ jobs:
         echo "${{ secrets.DROPLET_SSH_KEY }}" | tr -d '\r' > key.pem
         chmod 600 key.pem
 
-    - name: List available package managers for debugging
-      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "ls /usr/bin"
-
     - name: Ensure docker-compose is installed on the server
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "
-        command -v apt-get && apt-get update && apt-get install -y docker-compose || \
-        command -v yum && yum install -y docker-compose || \
-        command -v apk && apk add --no-cache docker-compose"
+        apt-get update && \
+        apt-get install -y docker-compose
+      "
 
     - name: Ensure bunzip2 is installed on the server
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "
-        command -v apt-get && apt-get update && apt-get install -y bzip2 || \
-        command -v yum && yum install -y bzip2 || \
-        command -v apk && apk add --no-cache bzip2"
+        apt-get update && \
+        apt-get install -y bzip2
+      "
+
+    - name: Verify docker-compose installation
+      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "docker-compose --version"
 
     - name: Create project directory on server if not exists
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "mkdir -p /root/mailserver"
@@ -53,13 +53,14 @@ jobs:
         docker save myapp:latest | bzip2 | ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" 'bunzip2 | docker load'
 
     - name: List files in mailserver directory for debugging
-      run: ssh -o StrictHostKeyChecking-no -i key.pem root@"${{ secrets.DROPLET_IP }}" "ls -la /root/mailserver"
+      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "ls -la /root/mailserver"
 
     - name: Deploy application
-      run: ssh -o StrictHostKeyChecking-no -i key.pem root@"${{ secrets.DROPLET_IP }}" "
+      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "
         cd /root/mailserver && \
         docker-compose down && \
-        docker-compose up -d"
+        docker-compose up -d
+      "
 
     - name: Clean up SSH key
       run: rm -f key.pem
