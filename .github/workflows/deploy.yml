@@ -47,8 +47,7 @@ jobs:
       run: ssh -o StrictHostKeyChecking=no -i key.pem "${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_IP }}" "
         cd /root/mailserver && \
         docker-compose down && \
-        docker-compose up -d
-      "
+        docker-compose up -d"
 
     - name: Clean up SSH key
       run: rm -f key.pem
