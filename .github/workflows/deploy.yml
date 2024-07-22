@@ -40,13 +40,15 @@ jobs:
       run: |
         docker save myapp:latest | bzip2 | ssh -o StrictHostKeyChecking=no -i key.pem "${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_IP }}" 'bunzip2 | docker load'
 
+    - name: List files in mailserver directory for debugging
+      run: ssh -o StrictHostKeyChecking=no -i key.pem "${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_IP }}" "ls -la /root/mailserver"
+
     - name: Deploy application
-      run: |
-        ssh -o StrictHostKeyChecking=no -i key.pem "${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_IP }}" << 'EOF'
-          cd /root/mailserver || exit 1
-          docker-compose down || exit 1
-          docker-compose up -d || exit 1
-        EOF
+      run: ssh -o StrictHostKeyChecking=no -i key.pem "${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_IP }}" "
+        cd /root/mailserver && \
+        docker-compose down && \
+        docker-compose up -d
+      "
 
     - name: Clean up SSH key
       run: rm -f key.pem
