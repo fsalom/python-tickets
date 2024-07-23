@@ -27,40 +27,18 @@ jobs:
         echo "${{ secrets.DROPLET_SSH_KEY }}" | tr -d '\r' > key.pem
         chmod 600 key.pem
 
-    - name: List available package managers in /usr/bin for debugging
-      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "ls /usr/bin"
-
-    - name: List available package managers in /bin for debugging
-      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "ls /bin"
-
-    - name: Check if apt-get is in a different location
-      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "find / -name apt-get"
-
-    - name: Ensure docker-compose is installed on the server
+    - name: Install Docker Compose on the server
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "
-        if command -v apt-get > /dev/null; then
-          apt-get update && apt-get install -y docker-compose;
-        elif command -v yum > /dev/null; then
-          yum install -y docker-compose;
-        elif command -v apk > /dev/null; then
-          apk add --no-cache docker-compose;
-        else
-          echo 'No compatible package manager found.';
-          exit 1;
-        fi"
+        curl -L https://github.com/docker/compose/releases/download/v2.20.2/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose && \
+        chmod +x /usr/local/bin/docker-compose && \
+        ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+      "
 
     - name: Ensure bunzip2 is installed on the server
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "
-        if command -v apt-get > /dev/null; then
-          apt-get update && apt-get install -y bzip2;
-        elif command -v yum > /dev/null; then
-          yum install -y bzip2;
-        elif command -v apk > /dev/null; then
-          apk add --no-cache bzip2;
-        else
-          echo 'No compatible package manager found.';
-          exit 1;
-        fi"
+        apt-get update && \
+        apt-get install -y bzip2
+      "
 
     - name: Verify docker-compose installation
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "docker-compose --version"
@@ -82,7 +60,8 @@ jobs:
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "
         cd /root/mailserver && \
         docker-compose down && \
-        docker-compose up -d"
+        docker-compose up -d
+      "
 
     - name: Clean up SSH key
       run: rm -f key.pem
