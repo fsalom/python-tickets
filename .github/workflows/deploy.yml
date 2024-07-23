@@ -36,6 +36,19 @@ jobs:
     - name: Check if apt-get is in a different location
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "find / -name apt-get"
 
+    - name: Ensure coreutils is installed on the server (for ln and chmod)
+      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "
+        if command -v apt-get > /dev/null; then
+          apt-get update && apt-get install -y coreutils;
+        elif command -v yum > /dev/null; then
+          yum install -y coreutils;
+        elif command -v apk > /dev/null; then
+          apk add --no-cache coreutils;
+        else
+          echo 'No compatible package manager found.';
+          exit 1;
+        fi"
+        
     - name: Ensure docker-compose is installed on the server
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "
         if command -v apt-get > /dev/null; then
