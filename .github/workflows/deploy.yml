@@ -31,14 +31,12 @@ jobs:
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "
         curl -L https://github.com/docker/compose/releases/download/v2.20.2/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose && \
         chmod +x /usr/local/bin/docker-compose && \
-        ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
-      "
+        ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose"
 
     - name: Ensure bunzip2 is installed on the server
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "
         apt-get update && \
-        apt-get install -y bzip2
-      "
+        apt-get install -y bzip2"
 
     - name: Verify docker-compose installation
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "docker-compose --version"
@@ -60,8 +58,7 @@ jobs:
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "
         cd /root/mailserver && \
         docker-compose down && \
-        docker-compose up -d
-      "
+        docker-compose up -d"
 
     - name: Clean up SSH key
       run: rm -f key.pem
