@@ -27,25 +27,40 @@ jobs:
         echo "${{ secrets.DROPLET_SSH_KEY }}" | tr -d '\r' > key.pem
         chmod 600 key.pem
 
-    - name: Verify if chmod is available in /usr/bin and /bin
-      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "
-        ls /usr/bin/chmod && ls /bin/chmod || echo 'chmod not found'"
+    - name: List available package managers in /usr/bin for debugging
+      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "ls /usr/bin"
 
-    - name: Ensure coreutils is installed (for chmod)
-      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "
-        apt-get update && \
-        apt-get install -y coreutils"
+    - name: List available package managers in /bin for debugging
+      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "ls /bin"
 
-    - name: Install Docker Compose on the server
+    - name: Check if apt-get is in a different location
+      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "find / -name apt-get"
+
+    - name: Ensure docker-compose is installed on the server
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "
-        curl -L https://github.com/docker/compose/releases/download/v2.20.2/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose && \
-        chmod +x /usr/local/bin/docker-compose && \
-        ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose"
+        if command -v apt-get > /dev/null; then
+          apt-get update && apt-get install -y docker-compose;
+        elif command -v yum > /dev/null; then
+          yum install -y docker-compose;
+        elif command -v apk > /dev/null; then
+          apk add --no-cache docker-compose;
+        else
+          echo 'No compatible package manager found.';
+          exit 1;
+        fi"
 
     - name: Ensure bunzip2 is installed on the server
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "
-        apt-get update && \
-        apt-get install -y bzip2"
+        if command -v apt-get > /dev/null; then
+          apt-get update && apt-get install -y bzip2;
+        elif command -v yum > /dev/null; then
+          yum install -y bzip2;
+        elif command -v apk > /dev/null; then
+          apk add --no-cache bzip2;
+        else
+          echo 'No compatible package manager found.';
+          exit 1;
+        fi"
 
     - name: Verify docker-compose installation
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "docker-compose --version"
