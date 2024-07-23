@@ -27,6 +27,15 @@ jobs:
         echo "${{ secrets.DROPLET_SSH_KEY }}" | tr -d '\r' > key.pem
         chmod 600 key.pem
 
+    - name: Verify if chmod is available in /usr/bin and /bin
+      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "
+        ls /usr/bin/chmod && ls /bin/chmod || echo 'chmod not found'"
+
+    - name: Ensure coreutils is installed (for chmod)
+      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "
+        apt-get update && \
+        apt-get install -y coreutils"
+
     - name: Install Docker Compose on the server
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "
         curl -L https://github.com/docker/compose/releases/download/v2.20.2/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose && \
