@@ -88,11 +88,11 @@ jobs:
     - name: List files in mailserver directory for debugging
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "ls -la /root/mailserver"
 
+    - name: Go to mailserver
+      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "cd /root/mailserver"
+
     - name: Deploy application
-      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "
-        cd /root/mailserver && \
-        docker-compose down && \
-        docker-compose up -d"
+      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "docker-compose down && docker-compose up -d"
 
     - name: Clean up SSH key
       run: rm -f key.pem
