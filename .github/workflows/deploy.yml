@@ -92,7 +92,7 @@ jobs:
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "docker-compose -f /root/mailserver/docker-compose.yml down"
 
     - name: Deploy application
-      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "docker-compose -f /root/mailserver/docker-compose.yml up -d"
+      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "docker-compose -f /root/mailserver/docker-compose.yml up"
 
     - name: Clean up SSH key
       run: rm -f key.pem
