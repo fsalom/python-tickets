@@ -75,11 +75,6 @@ jobs:
           exit 1;
         fi"
 
-    - name: Verify docker-compose installation
-      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "
-        docker-compose --version && \
-        ln -sf /usr/local/bin/docker-compose /usr/bin/docker-compose"
-
     - name: Create project directory on server if not exists
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "mkdir -p /root/mailserver"
 
