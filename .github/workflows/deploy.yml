@@ -87,10 +87,7 @@ jobs:
 
     - name: List files in mailserver directory for debugging
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "ls -la /root/mailserver"
-
-    - name: Go to mailserver
-      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "cd /root/mailserver"
-
+      
     - name: Shut down application
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "docker-compose -f /root/mailserver/docker-compose.yml down"
 
