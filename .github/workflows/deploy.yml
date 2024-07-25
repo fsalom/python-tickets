@@ -39,7 +39,7 @@ jobs:
       run: ssh -o StrictHostKeyChecking=no -i "${{ secrets.DROPLET_SSH_KEY }}" "${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_IP }}" "mkdir -p /root/mailserver"
 
     - name: Copy Docker Compose file to server
-      run: scp -o StrictHostKeyChecking=no -i "${{ secrets.DROPLET_SSH_KEY }}" docker-compose.yml "${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_IP }}:/root/mailserver"
+      run: scp -o StrictHostKeyChecking=no -i "${{ secrets.DROPLET_SSH_KEY }}" docker-compose.yaml "${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_IP }}:/root/mailserver"
 
     - name: Save Docker image and load on server
       run: |
