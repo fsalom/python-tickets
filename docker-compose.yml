@@ -2,6 +2,8 @@ version: '3'
 
 services:
   mailserver:
+    build:
+      context: ..
     container_name: mailserver
     ports:
       - "25:25"
