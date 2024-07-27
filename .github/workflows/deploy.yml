@@ -16,6 +16,9 @@ jobs:
     - name: Set up Docker Buildx
       uses: docker/setup-buildx-action@v1
 
+    - name: Copy entrypoint file to server
+      run: scp -o StrictHostKeyChecking=no -i key.pem entrypoint.sh root@"${{ secrets.DROPLET_IP }}:/root/mailserver"
+      
     - name: Build Docker image
       run: docker build -t myapp:latest .
 
@@ -83,9 +86,6 @@ jobs:
 
     - name: Copy Dockerfile file to server
       run: scp -o StrictHostKeyChecking=no -i key.pem Dockerfile root@"${{ secrets.DROPLET_IP }}:/root/mailserver"
-
-    - name: Copy entrypoint file to server
-      run: scp -o StrictHostKeyChecking=no -i key.pem entrypoint.sh root@"${{ secrets.DROPLET_IP }}:/root/mailserver"
 
     - name: Save Docker image and load on server
       run: |
