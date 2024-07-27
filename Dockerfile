@@ -23,7 +23,7 @@ RUN postconf -e 'inet_protocols=all'
 RUN postconf -e 'relay_domains='
 
 # Añadir un archivo de entrada para el servicio
-COPY entrypoint.sh /entrypoint.sh
+COPY /root/mailserver/entrypoint.sh /entrypoint.sh
 
 # Establecer el punto de entrada
 ENTRYPOINT ["/entrypoint.sh"]
