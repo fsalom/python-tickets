@@ -81,6 +81,9 @@ jobs:
     - name: Copy Docker Compose file to server
       run: scp -o StrictHostKeyChecking=no -i key.pem docker-compose.yml root@"${{ secrets.DROPLET_IP }}:/root/mailserver"
 
+    - name: Copy Dockerfile file to server
+      run: scp -o StrictHostKeyChecking=no -i key.pem Dockerfile root@"${{ secrets.DROPLET_IP }}:/root/mailserver"
+
     - name: Save Docker image and load on server
       run: |
         docker save myapp:latest | bzip2 | ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" 'bunzip2 | docker load'
