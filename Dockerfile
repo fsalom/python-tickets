@@ -26,4 +26,4 @@ RUN postconf -e 'relay_domains='
 # COPY entrypoint.sh /entrypoint.sh
 
 # Establecer el punto de entrada
-# ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/entrypoint.sh"]
