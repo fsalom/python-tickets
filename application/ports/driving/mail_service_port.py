@@ -1,9 +1,10 @@
 from abc import ABC, abstractmethod
 
+from domain.mail import Mail
 from domain.ticket import Ticket
 
 
-class TicketServicePort(ABC):
+class MailServicePort(ABC):
     @abstractmethod
-    def process(self, ticket: Ticket):
+    def process(self):
         pass

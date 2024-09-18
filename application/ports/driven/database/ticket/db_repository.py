@@ -3,7 +3,7 @@ from abc import ABC, abstractmethod
 from domain.ticket import Ticket
 
 
-class TicketServicePort(ABC):
+class TicketDBRepositoryPort(ABC):
     @abstractmethod
-    def process(self, ticket: Ticket):
+    def save(self, ticket: Ticket):
         pass

@@ -22,6 +22,10 @@ def main():
             "forget to activate a virtual environment?"
         ) from exc
     execute_from_command_line(sys.argv)
+
+
+if __name__ == '__main__':
+    main()
     mail_repository_adapter = MailRepositoryAdapter()
     mail_db_repository_adapter = MailDBRepositoryAdapter()
     ticket_db_repository_adapter = TicketDBRepositoryAdapter()
@@ -29,7 +33,5 @@ def main():
                                     mail_db_repository=mail_db_repository_adapter,
                                     ticket_db_repository=ticket_db_repository_adapter)
     adapter = MailsAdapter(service=service)
+    print("ADAPTER")
     adapter.read(1)
-
-if __name__ == '__main__':
-    main()
