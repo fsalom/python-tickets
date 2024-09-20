@@ -13,22 +13,17 @@ from domain.ticket import Ticket
 class MailProcessorServices(MailServicePort):
     def __init__(self,
                  mail_repository: MailRepositoryPort,
-                 mail_db_repository: MailDBRepositoryPort,
                  ticket_db_repository: TicketDBRepositoryPort):
         self.mail_repository = mail_repository
-        self.mail_db_repository = mail_db_repository
         self.ticket_db_repository = ticket_db_repository
 
     def process(self):
         mails = self.mail_repository.read()
-        print("PROCESSING MAILS")
-        print(mails)
         for mail in mails:
-            print(mail.mail)
-            ticket = self.analyze(content=mail.content)
-            self.mail_db_repository.save(mail)
+            ticket = self.analyze(content=mail.content, email=mail.mail)
+            self.ticket_db_repository.save(ticket)
 
-    def analyze(self, content: str) -> Ticket:
+    def analyze(self, content: str, email: str) -> Ticket:
         receipt_text = content
         # 1. Extraer la ubicación
         location_pattern = r"(MERCADONA, S.A. A-\d+)(.*?TELÉFONO: \d+)"
@@ -57,4 +52,4 @@ class MailProcessorServices(MailServicePort):
                 new_product = Product(name=name, quantity=quantity, price_per_unit=price_per_unit, price=price)
             products_to_save.append(new_product)
 
-        return Ticket(products=products_to_save, total=total)
+        return Ticket(products=products_to_save, total=total, date="", email=email, location=location_info)
