@@ -1,14 +1,38 @@
 from django.db import models
 
-from domain.product import Product
-from driven.db.user.models import User
+from driven.db.product.models import ProductDBO, ProductPriceHistoryDBO
+from driven.db.store.models import StoreDBO
+from driven.db.user.models import UserDBO
 
 
-class Ticket(models.Model):
-    date = models.DateField(auto_now_add=True)
-    quantity = models.CharField(max_length=2)
-    products = models.ManyToManyField(Product)
-    place = models.CharField(max_length=100)
-    user = models.ForeignKey(
-        User, on_delete=models.CASCADE, related_name="owner"
+class TicketDBO(models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    date_raw = models.CharField(max_length=25)
+    location = models.ForeignKey(
+        StoreDBO, on_delete=models.CASCADE, related_name="location"
     )
+    products = models.ManyToManyField(
+        ProductDBO, through='TicketProductDBO'  # Relación a través de TicketProductDBO
+    )
+    email = models.ForeignKey(
+        UserDBO, on_delete=models.CASCADE, related_name="email"
+    )
+
+    def __str__(self):
+        return f"Ticket {self.id} - {self.created_at} - {self.location}"
+
+
+class TicketProductDBO(models.Model):
+    ticket = models.ForeignKey(
+        TicketDBO, on_delete=models.CASCADE, related_name="ticket_products"
+    )
+    product = models.ForeignKey(
+        ProductDBO, on_delete=models.CASCADE, related_name="product_tickets"
+    )
+    quantity = models.FloatField(default=0)
+    history_price = models.ForeignKey(
+        ProductPriceHistoryDBO, on_delete=models.CASCADE, related_name="ticket_price"
+    )
+
+    def __str__(self):
+        return f"Ticket {self.ticket.id} - {self.product.name} - Qty: {self.quantity} - Price: {self.history_price.price}"
