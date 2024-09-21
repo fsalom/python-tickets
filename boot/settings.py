@@ -42,7 +42,12 @@ THIRD_PARTY_APPS = [
     'oauth2_provider'
 ]
 
-PROJECT_APPS = []
+PROJECT_APPS = [
+    'driven.db.product.apps.ProductConfig',
+    'driven.db.store.apps.StoreConfig',
+    'driven.db.ticket.apps.TicketConfig',
+    'driven.db.user.apps.UserConfig',
+]
 
 INSTALLED_APPS = DJANGO_APPS + PROJECT_APPS + THIRD_PARTY_APPS
 
