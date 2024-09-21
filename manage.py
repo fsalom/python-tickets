@@ -2,12 +2,36 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
+import threading
+import time
+
+import django
 
 from application.services.mail_processor_services import MailProcessorServices
-from driven.db.mail.adapter import MailDBRepositoryAdapter
 from driven.db.ticket.adapter import TicketDBRepositoryAdapter
 from driven.mail.mail_repository_adapter import MailRepositoryAdapter
 from driving.mails.adapter import MailsAdapter
+
+
+def cronjob():
+    # Forzar la escritura en consola sin buffering
+    sys.stdout.write("Starting cronjob\n")
+    sys.stdout.flush()
+
+    mail_repository_adapter = MailRepositoryAdapter()
+    ticket_db_repository_adapter = TicketDBRepositoryAdapter()
+
+    service = MailProcessorServices(mail_repository=mail_repository_adapter,
+                                    ticket_db_repository=ticket_db_repository_adapter)
+
+    adapter = MailsAdapter(service=service)
+    adapter.schedule_jobs()
+
+    # Simular ejecución periódica para debug
+    while True:
+        sys.stdout.write("Cronjob is running...\n")
+        sys.stdout.flush()
+        time.sleep(10)  # Simular un proceso que corre periódicamente
 
 
 def main():
@@ -21,17 +45,14 @@ def main():
             "available on your PYTHONPATH environment variable? Did you "
             "forget to activate a virtual environment?"
         ) from exc
+    # Iniciar el cronjob en un hilo separado
+    cron_thread = threading.Thread(target=cronjob)
+    cron_thread.daemon = True  # Esto asegura que el hilo se detenga cuando el servidor se detenga
+    cron_thread.start()
+
+    # Continuar con el arranque normal de Django
     execute_from_command_line(sys.argv)
 
 
 if __name__ == '__main__':
     main()
-    mail_repository_adapter = MailRepositoryAdapter()
-    mail_db_repository_adapter = MailDBRepositoryAdapter()
-    ticket_db_repository_adapter = TicketDBRepositoryAdapter()
-    service = MailProcessorServices(mail_repository=mail_repository_adapter,
-                                    mail_db_repository=mail_db_repository_adapter,
-                                    ticket_db_repository=ticket_db_repository_adapter)
-    adapter = MailsAdapter(service=service)
-    print("ADAPTER")
-    adapter.read(1)
