@@ -4,19 +4,18 @@ import os
 import sys
 import threading
 import time
-
 import django
-
-from application.services.mail_processor_services import MailProcessorServices
-from driven.db.ticket.adapter import TicketDBRepositoryAdapter
-from driven.mail.mail_repository_adapter import MailRepositoryAdapter
-from driving.mails.adapter import MailsAdapter
-
 
 def cronjob():
     # Forzar la escritura en consola sin buffering
     sys.stdout.write("Starting cronjob\n")
     sys.stdout.flush()
+
+    # Importar módulos dependientes de Django después de la inicialización
+    from application.services.mail_processor_services import MailProcessorServices
+    from driven.db.ticket.adapter import TicketDBRepositoryAdapter
+    from driven.mail.mail_repository_adapter import MailRepositoryAdapter
+    from driving.mails.adapter import MailsAdapter
 
     mail_repository_adapter = MailRepositoryAdapter()
     ticket_db_repository_adapter = TicketDBRepositoryAdapter()
@@ -46,9 +45,9 @@ def main():
             "forget to activate a virtual environment?"
         ) from exc
     # Iniciar el cronjob en un hilo separado
-    cron_thread = threading.Thread(target=cronjob)
-    cron_thread.daemon = True  # Esto asegura que el hilo se detenga cuando el servidor se detenga
-    cron_thread.start()
+    #cron_thread = threading.Thread(target=cronjob)
+    #cron_thread.daemon = True  # Esto asegura que el hilo se detenga cuando el servidor se detenga
+    #cron_thread.start()
 
     # Continuar con el arranque normal de Django
     execute_from_command_line(sys.argv)
