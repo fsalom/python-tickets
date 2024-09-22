@@ -27,7 +27,6 @@ class MailRepositoryAdapter(MailRepositoryPort):
         if not os.path.isdir(temp_folder):
             os.mkdir(temp_folder)
 
-        tickets = []
         for mail_id in mail_ids:
             status, msg_data = mail.fetch(mail_id, "(RFC822)")
             for response_part in msg_data:
