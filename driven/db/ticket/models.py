@@ -9,15 +9,14 @@ class TicketDBO(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     date_raw = models.CharField(max_length=25)
     location = models.ForeignKey(
-        StoreDBO, on_delete=models.CASCADE, related_name="location"
+        StoreDBO, on_delete=models.CASCADE, related_name="ticket_locations"
     )
     products = models.ManyToManyField(
-        ProductDBO, through='TicketProductDBO'  # Relación a través de TicketProductDBO
+        ProductDBO, through='TicketProductDBO'
     )
     email = models.ForeignKey(
-        UserDBO, on_delete=models.CASCADE, related_name="email"
+        UserDBO, on_delete=models.CASCADE, related_name="tickets"
     )
-
     def __str__(self):
         return f"Ticket {self.id} - {self.created_at} - {self.location}"
 

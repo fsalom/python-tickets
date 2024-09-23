@@ -3,7 +3,6 @@ from django.db import models
 
 class ProductDBO(models.Model):
     name = models.CharField(verbose_name="Name", max_length=50, unique=True)
-    image = models.ImageField(verbose_name="Image", upload_to='products')
     quantity = models.IntegerField(verbose_name="Quantity")
 
     def __str__(self):
