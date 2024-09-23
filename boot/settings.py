@@ -43,10 +43,10 @@ THIRD_PARTY_APPS = [
 ]
 
 PROJECT_APPS = [
-    'driven.db.product.apps.ProductConfig',
-    'driven.db.store.apps.StoreConfig',
-    'driven.db.ticket.apps.TicketConfig',
-    'driven.db.user.apps.UserConfig',
+    'driven.db.product',
+    'driven.db.store',
+    'driven.db.ticket',
+    'driven.db.user',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + PROJECT_APPS + THIRD_PARTY_APPS
@@ -96,6 +96,7 @@ DATABASES = {
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators
 
+AUTH_USER_MODEL = "user.UserDBO"
 AUTH_PASSWORD_VALIDATORS = [
     {
         'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
