@@ -17,8 +17,10 @@ class TicketDBO(models.Model):
     email = models.ForeignKey(
         UserDBO, on_delete=models.CASCADE, related_name="tickets"
     )
+    total = models.FloatField()
+
     def __str__(self):
-        return f"Ticket {self.id} - {self.created_at} - {self.location}"
+        return f"Ticket {self.id}"
 
 
 class TicketProductDBO(models.Model):
@@ -32,6 +34,7 @@ class TicketProductDBO(models.Model):
     history_price = models.ForeignKey(
         ProductPriceHistoryDBO, on_delete=models.CASCADE, related_name="ticket_price"
     )
+    units = models.FloatField(default=1)
 
     def __str__(self):
         return f"Ticket {self.ticket.id} - {self.product.name} - Qty: {self.quantity} - Price: {self.history_price.price}"
