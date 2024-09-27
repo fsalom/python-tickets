@@ -32,6 +32,20 @@ Descripción P. Unit Importe
 1 T POLLO NATURAL 1,95
 1 AGUACATE
 0,236 kg 5,10 €/kg 1,20
+1 BOLSA PLASTICO 0,15
+1 +PROT CHOCO-NATA 2,90
+1 + PROTEÍNAS FLAN 2,00
+1 JAMON S. EXTRA FINO 2,45
+1 CALAMAR PEQUEÑO 5,10
+1 ESCALOPIN SALMON 7,76
+1 MOUSSE PROTEIN CHOCO 1,30
+1 GUACAMOLE 200 G 1,85
+2 CLARA LIQUIDA PASTEU 1,55 3,10
+1 ESP VERDE FINO 2,29
+1 OBLEAS PARA HELADO 0,70
+1 3 VEGETALES 1,64
+1 PORCIONES 85% CACAO 3,20
+1 CEBOLLA CARAMELIZADA 1,70
 TOTAL (€) 8,79
 TARJETA BANCARIA 8,79
 IVA BASE IMPONIBLE (€) CUOTA (€)
@@ -47,7 +61,6 @@ Importe: 8,79 € MASTERCARD
 SE ADMITEN DEVOLUCIONES CON TICKET
         '''
         ticket = self.analyze(content=content, email="mail")
-
 
     def process(self):
         mails = self.mail_repository.read()
@@ -66,8 +79,7 @@ SE ADMITEN DEVOLUCIONES CON TICKET
         date = date.group(1) if date else "Fecha no encontrada"
         # PRODUCTS
         products_text = self.extract_products_section(content)
-        products_pattern = r"(\d+\s+[a-zA-Z\s-]+)\n?([\d,.]+\s?kg)?\s?(\d+,\d+ €/kg)?\s?(\d+,\d+)"
-        products = re.findall(products_pattern, products_text if products_text else "")
+        products = self.get_products(str(products_text))
         # LOCATION
         location_pattern = r"(MERCADONA, S.A. A-\d+)(.*?TELÉFONO: \d+)"
         location_match = re.search(location_pattern, content, re.DOTALL)
@@ -77,73 +89,79 @@ SE ADMITEN DEVOLUCIONES CON TICKET
         totals_match = re.search(totals_pattern, content)
         total_ticket = totals_match.group(1) if totals_match else "0,0"
 
-        products_exported = []
-        for product in products:
-            name = product[0].strip()
-            weight = product[1].strip() if product[1] else None
-            price_kg = product[2].strip() if product[2] else None
-            total = product[3].strip()
-
-            product_dict = {
-                'name': name,
-                'weight': weight,
-                'price_kg': price_kg,
-                'total': total
-            }
-            products_exported.append(product_dict)
-
-        results = {
-            'date': date,
-            'id_ticket': id_ticket,
-            'products': products_exported
-        }
-
-        print(f"Localización: {location_info}")
-        print(f"Fecha: {results['date']}")
-        print(f"Número de factura: {results['id_ticket']}")
-        print("Productos:")
-
-        products_to_save = []
-        for product in results['products']:
-            quantity_name = product["name"].split(maxsplit=1)
-            quantity = quantity_name[0]
-            name = quantity_name[1] if len(quantity_name) > 1 else ""
-
-            weight = "-"
-            if product["weight"]:
-                weight = product["weight"]
-
-            price_kg = "-"
-            if product['price_kg']:
-                price_kg = product['price_kg']
-
-            total = product["total"]
-
-            string_total = total.replace(",", ".")
-            float_total = float(string_total)
-
-            print(f"{quantity} {name} {weight} {price_kg} {total}")
-
-            new_product = Product(name=name,
-                                  quantity=quantity,
-                                  price_per_unit=price_kg,
-                                  price=float_total,
-                                  weight=weight)
-
-            products_to_save.append(new_product)
-
         string_number = total_ticket.replace(",", ".")
         float_number = float(string_number)
+        print(f"Localización: {location_info}")
+        print(f"Ticket: {id_ticket}")
         print(f"Importe: {float_number}")
+        print("PRODUCTOS-----")
+
         return Ticket(id_ticket=id_ticket,
-                      products=products_to_save,
+                      products=products,
                       total=float_number,
                       date=date,
                       email=email,
                       location=location_info,
                       iva=0.0)
 
-    def extract_products_section(self, ticket_text):
+    def get_products(self, data: str) -> [Product]:
+        lines = data.strip().split('\n')
+        tokenized_lines = [line.split() for line in lines]
+
+        products = []
+        complete_product = None
+        for tokens in tokenized_lines:
+            total = ""
+            float_total = 0.0
+            float_price_per_unit = 0.0
+            weight = ""
+            quantity = tokens[0]
+            if complete_product:
+                if not self.is_float(text=quantity):
+                    weight = tokens[0]
+                    price_per_unit = tokens[2]
+                    total = tokens[-1]
+                    total = total.replace(",", ".")
+                    float_total = float(total)
+                    price_per_unit = price_per_unit.replace(",", ".")
+                    float_price_per_unit = float(price_per_unit)
+                complete_product.price_per_unit = float_price_per_unit
+                complete_product.price = float_total
+                complete_product.weight = weight
+                products.append(complete_product)
+                complete_product = None
+                continue
+            if not quantity.isdigit():
+                continue
+
+            last_element = tokens[-1]
+            name = ' '.join(tokens[1:-1]) if quantity == "1" else ' '.join(tokens[1:-2])
+            if ',' in last_element:
+                total = last_element
+                total = total.replace(",", ".")
+                float_total = float(total)
+            else:
+                name = ' '.join(tokens[1:])
+                if not total.strip():
+                    complete_product = Product(name=name,
+                                               quantity=int(quantity),
+                                               price_per_unit=0.0,
+                                               price=0.0,
+                                               weight="")
+                    continue
+
+            product = Product(name=name,
+                              quantity=int(quantity),
+                              price_per_unit=float_total / int(quantity),
+                              price=float_total,
+                              weight=weight)
+            products.append(product)
+        for product in products:
+            print(
+                f"{product.quantity} | {product.name} | ({product.price_per_unit} {product.weight}) = {product.price}")
+
+    @staticmethod
+    def extract_products_section(ticket_text):
         products_pattern = r"Descripción(.+?)TOTAL \(\€\)"
         match = re.search(products_pattern, ticket_text, re.DOTALL)
 
@@ -152,3 +170,11 @@ SE ADMITEN DEVOLUCIONES CON TICKET
             return products_section
         else:
             return None
+
+    @staticmethod
+    def is_float(text):
+        try:
+            float(text)
+            return True
+        except ValueError:
+            return False
