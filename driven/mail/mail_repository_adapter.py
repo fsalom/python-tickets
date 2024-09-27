@@ -1,6 +1,7 @@
 import email
 import imaplib
 import os
+import re
 from email.header import decode_header
 
 import pdfplumber
@@ -40,6 +41,7 @@ class MailRepositoryAdapter(MailRepositoryPort):
 
                     from_ = msg.get("From")
                     print("De:", from_)
+                    name, from_email = self.extract_name_and_email(from_)
 
                     if msg.is_multipart():
                         for part in msg.walk():
@@ -56,11 +58,37 @@ class MailRepositoryAdapter(MailRepositoryPort):
                                         f.write(part.get_payload(decode=True))
                                     print(f"Archivo adjunto guardado como: {filepath}")
                                     content = self.read_attachment(filepath)
-                                    mails.append(Mail(mail=from_, subject=subject, content=content))
+                                    mails.append(Mail(email=from_email,
+                                                      subject=subject,
+                                                      content=content,
+                                                      date_raw=self.get_raw_date(subject)))
         mail.logout()
         return mails
 
-    def read_attachment(self, pdf_path) -> str:
+    @staticmethod
+    def extract_name_and_email(text):
+        pattern = r"(.+?)\s*<(.+?)>"
+        match = re.match(pattern, text)
+
+        if match:
+            name = match.group(1).strip()  # Captura el nombre
+            email = match.group(2).strip()  # Captura el email
+            return name, email
+        else:
+            return None
+
+    @staticmethod
+    def get_raw_date(subject) -> str:
+        pattern = r"\b\d{8}\b"
+        match = re.search(pattern, subject)
+        if match:
+            date = match.group()
+            return date
+        else:
+            return "-"
+
+    @staticmethod
+    def read_attachment(pdf_path) -> str:
         text = ""
         try:
             with pdfplumber.open(pdf_path) as pdf:
