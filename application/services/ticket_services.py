@@ -3,10 +3,10 @@ from application.ports.driving.tickets_service_port import TicketServicePort
 from domain.ticket import Ticket
 
 
-class TicketProcessorServices(TicketServicePort):
+class TicketServices(TicketServicePort):
     def __init__(self,
                  db_repository: TicketDBRepositoryPort):
         self.db_repository = db_repository
 
-    def process(self, ticket: Ticket):
-        self.db_repository.save(ticket)
+    def get_ticket_for_user(self, user: str) -> [Ticket]:
+        return self.db_repository.get_tickets_for(user=user)
