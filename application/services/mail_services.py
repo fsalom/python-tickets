@@ -4,18 +4,18 @@ from application.ports.driven.database.mail.db_repository import MailDBRepositor
 from application.ports.driven.database.ticket.db_repository import TicketDBRepositoryPort
 from application.ports.driven.mail.mail_repository_port import MailRepositoryPort
 from application.ports.driving.mail_service_port import MailServicePort
-from application.ports.driving.tickets_service_port import TicketServicePort
-from domain.mail import Mail
 from domain.product import Product
 from domain.ticket import Ticket
 
 
-class MailProcessorServices(MailServicePort):
+class MailServices(MailServicePort):
     def __init__(self,
                  mail_repository: MailRepositoryPort,
-                 ticket_db_repository: TicketDBRepositoryPort):
+                 ticket_db_repository: TicketDBRepositoryPort,
+                 mail_db_repository: MailDBRepositoryPort):
         self.mail_repository = mail_repository
         self.ticket_db_repository = ticket_db_repository
+        self.mail_db_repository = mail_db_repository
 
     def test(self):
         content = '''MERCADONA, S.A. A-46103834
@@ -65,11 +65,10 @@ SE ADMITEN DEVOLUCIONES CON TICKET
     def process(self):
         mails = self.mail_repository.read()
         for mail in mails:
-            ticket = self.analyze(content=mail.content, email=mail.mail)
+            ticket = self.analyze(content=mail.content, email=mail.email)
             self.ticket_db_repository.save(ticket)
 
     def analyze(self, content: str, email: str):
-        # ID TICKET
         id_pattern = r"(FACTURA(?: SIMPLIFICADA)?(?:.*?)(\d{4}-\d{3}-\d{6}))"
         id_ticket = re.search(id_pattern, content)
         id_ticket = id_ticket.group(2) if id_ticket else "Número de factura no encontrado"
@@ -84,6 +83,7 @@ SE ADMITEN DEVOLUCIONES CON TICKET
         location_pattern = r"(MERCADONA, S.A. A-\d+)(.*?TELÉFONO: \d+)"
         location_match = re.search(location_pattern, content, re.DOTALL)
         location_info = location_match.group(0) if location_match else "Ubicación no encontrada"
+        location_info = location_info.replace("MERCADONA, S.A. A-46103834 ", "")
         # TOTAL
         totals_pattern = r"TOTAL \(€\) (\d+,\d{2})"
         totals_match = re.search(totals_pattern, content)
@@ -95,6 +95,9 @@ SE ADMITEN DEVOLUCIONES CON TICKET
         print(f"Ticket: {id_ticket}")
         print(f"Importe: {float_number}")
         print("PRODUCTOS-----")
+        for product in products:
+            print(
+                f"{product.quantity} | {product.name} | ({product.price_per_unit} {product.weight}) = {product.price}")
 
         return Ticket(id_ticket=id_ticket,
                       products=products,
@@ -156,9 +159,7 @@ SE ADMITEN DEVOLUCIONES CON TICKET
                               price=float_total,
                               weight=weight)
             products.append(product)
-        for product in products:
-            print(
-                f"{product.quantity} | {product.name} | ({product.price_per_unit} {product.weight}) = {product.price}")
+        return products
 
     @staticmethod
     def extract_products_section(ticket_text):
