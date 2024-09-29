@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 
 from domain.tokens import Tokens
+from domain.user import User
 
 
 class AuthenticationDBRepositoryPort(ABC):
@@ -10,4 +11,8 @@ class AuthenticationDBRepositoryPort(ABC):
 
     @abstractmethod
     def logout(self):
+        pass
+
+    @abstractmethod
+    def get_user(self, token: str) -> User | None:
         pass
