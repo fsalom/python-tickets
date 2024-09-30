@@ -5,5 +5,5 @@ from domain.ticket import Ticket
 
 class TicketServicePort(ABC):
     @abstractmethod
-    def process(self, ticket: Ticket):
+    async def get_ticket_for_user(self, user: str) -> [Ticket]:
         pass
