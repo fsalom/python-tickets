@@ -9,12 +9,12 @@ https://docs.djangoproject.com/en/5.1/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
-
+import os
+import secrets
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.1/howto/deployment/checklist/
@@ -27,7 +27,6 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
-
 # Application definition
 DJANGO_APPS = [
     'django.contrib.admin',
@@ -39,7 +38,9 @@ DJANGO_APPS = [
 ]
 
 THIRD_PARTY_APPS = [
-    'oauth2_provider'
+    'oauth2_provider',
+    'rest_framework',
+    'rest_framework.authtoken',
 ]
 
 PROJECT_APPS = [
@@ -47,6 +48,7 @@ PROJECT_APPS = [
     'driven.db.store',
     'driven.db.ticket',
     'driven.db.user',
+    'driven.db.mail',
 ]
 
 INSTALLED_APPS = DJANGO_APPS + PROJECT_APPS + THIRD_PARTY_APPS
@@ -61,7 +63,28 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-ROOT_URLCONF = 'boot.urls'
+ROOT_URLCONF = 'infrastructure.django.urls'
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'oauth2_provider.contrib.rest_framework.OAuth2Authentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+}
+
+
+def generate_token():
+    return secrets.token_urlsafe(32)
+
+
+OAUTH2_PROVIDER = {
+    'ACCESS_TOKEN_EXPIRE_SECONDS': 3600,  # 1 hora para el access_token
+    'REFRESH_TOKEN_EXPIRE_SECONDS': 86400 * 7,  # 7 días para el refresh_token
+    'ACCESS_TOKEN_GENERATOR': generate_token,  # Generador de access tokens
+    'REFRESH_TOKEN_GENERATOR': generate_token,  # Generador de refresh tokens
+}
 
 TEMPLATES = [
     {
@@ -80,16 +103,19 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'boot.wsgi.application'
-
+WSGI_APPLICATION = 'infrastructure.django.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    "default": {
+        "ENGINE": "django.db.backends.postgresql_psycopg2",
+        "NAME": os.environ.get("POSTGRES_DB", "mdona_tickets"),
+        "USER": os.environ.get("POSTGRES_USER", "mdona_tickets"),
+        "PASSWORD": os.environ.get("POSTGRES_PASSWORD", "12345678A"),
+        "HOST": os.environ.get("POSTGRES_HOST", "localhost"),
+        "PORT": os.environ.get("POSTGRES_PORT", "5432"),
     }
 }
 
@@ -112,7 +138,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
@@ -123,7 +148,6 @@ TIME_ZONE = 'UTC'
 USE_I18N = True
 
 USE_TZ = True
-
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
