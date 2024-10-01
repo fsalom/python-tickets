@@ -5,11 +5,11 @@ services:
     container_name: web
     restart: always
     build:
-      context: .  # Esto apunta al directorio superior donde están pyproject.toml y poetry.lock
-      dockerfile: .docker/app/Dockerfile  # Cambia la referencia al Dockerfile
+      context: ..  # Cambia el contexto para incluir el directorio donde está pyproject.toml
+      dockerfile: .docker/app/Dockerfile
     ports:
       - '127.0.0.1:8000:8000'
-    env_file: 'environments/staging.env'  # Ajusta la ruta del archivo .env si es necesario
+    env_file: './environments/staging.env'
     command: 'gunicorn infrastructure.django.wsgi:application -k gevent -w 3 -b :8000 --worker-connections=1000 --timeout=4000 --reload --capture-output --enable-stdio-inheritance --log-level=debug --access-logfile=- --log-file=/var/log/error.log'
     depends_on:
       - postgres
@@ -18,7 +18,7 @@ services:
     container_name: 'postgres'
     restart: always
     image: 'postgres:16.3'
-    env_file: 'environments/staging.env'  # Asegúrate de que esta ruta sea accesible
+    env_file: './environments/staging.env'  # Asegúrate de que esta ruta sea accesible
     ports:
       - '5432:5432'
     volumes:
@@ -27,7 +27,7 @@ services:
   nginx:
     container_name: 'nginx'
     restart: always
-    build: 'nginx/dev'  # Ruta relativa correcta a la carpeta de NGINX
+    build: './nginx/dev'  # Ruta relativa correcta a la carpeta de NGINX
     cap_add:
       - NET_ADMIN
     environment:
