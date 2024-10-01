@@ -1,33 +1,21 @@
-# Usar una imagen base oficial de Python
-FROM python:3.9-slim
+FROM rudodeveloper/python:3.12.0
 
-# Establecer el directorio de trabajo en el contenedor
+# Instala Poetry si no está en la imagen base
+RUN pip install poetry
+
+# Crea el directorio de la aplicación y establece el directorio de trabajo
+RUN mkdir /code
 WORKDIR /code
 
-# Instalar dependencias del sistema para Poetry
-RUN apt-get update && apt-get install -y curl
-
-# Instalar Poetry utilizando el script oficial
-RUN curl -sSL https://install.python-poetry.org | python3 -
-
-# Agregar Poetry al PATH
-ENV PATH="/root/.local/bin:$PATH"
-
-# Verificar la instalación de Poetry
-RUN poetry --version
-
-# Copiar el archivo pyproject.toml y poetry.lock al contenedor
-COPY pyproject.toml poetry.lock /code/
-
-# Instalar las dependencias con Poetry
-RUN poetry config virtualenvs.create false \
-    && poetry install --no-interaction --no-ansi -vvv  # Mantener el modo verbose
-
-# Copiar el resto del código de la aplicación
+# Copia todos los archivos del proyecto en el directorio de trabajo
 COPY . /code/
 
-# Exponer el puerto de la aplicación
+# Instala las dependencias
+RUN poetry export -f requirements.txt --without-hashes -o requirements.txt && \
+    pip install -r requirements.txt
+
+# Exponer el puerto 8000
 EXPOSE 8000
 
-# Comando de arranque
-CMD ["gunicorn", "infrastructure.django.wsgi:application", "-k", "gevent", "-w", "3", "-b", ":8000", "--worker-connections=1000 --timeout=4000 --reload --capture-output --enable-stdio-inheritance --log-level=debug --access-logfile=- --log-file=/var/log/error.log"]
+# Comando para iniciar Gunicorn
+CMD ["gunicorn", "infrastructure.django.wsgi:application", "-b", "0.0.0.0:8000", "--workers=3", "--log-level=debug"]
