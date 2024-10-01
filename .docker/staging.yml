@@ -3,14 +3,14 @@ version: '3.3'
 services:
   web:
     container_name: web
-    restart: always  # Fixes occasional error: Conflict. The container name "/web" is already in use by container
+    restart: always
     build:
-      context: .  # Cambia el contexto de construcción al directorio actual
-      dockerfile: .docker/app/Dockerfile  # Ruta al Dockerfile
+      context: .  # Apunta al directorio actual donde se encuentra docker-compose.yml
+      dockerfile: .docker/app/Dockerfile  # Mantén la referencia correcta al Dockerfile dentro de .docker/app
     ports:
       - '127.0.0.1:8000:8000'
     image: 'websource'
-    env_file: './environments/staging.env'  # Ruta relativa al archivo .env
+    env_file: './environments/staging.env'  # Ajusta la ruta relativa al archivo .env
     command: 'gunicorn infrastructure.django.wsgi:application -k gevent -w 3 -b :8000 --worker-connections=1000 --timeout=4000 --reload --capture-output --enable-stdio-inheritance --log-level=debug --access-logfile=- --log-file=/var/log/error.log'
     depends_on:
       - postgres
@@ -19,7 +19,7 @@ services:
     container_name: 'postgres'
     restart: always
     image: 'postgres:16.3'
-    env_file: './environments/staging.env'  # Asegúrate de que esta ruta sea accesible en el servidor
+    env_file: './environments/staging.env'  # Asegúrate de que esta ruta sea accesible
     ports:
       - '5432:5432'
     volumes:
@@ -28,7 +28,7 @@ services:
   nginx:
     container_name: 'nginx'
     restart: always
-    build: './nginx/dev'  # Ruta relativa a la carpeta de NGINX
+    build: './nginx/dev'  # Ruta relativa correcta a la carpeta de NGINX
     cap_add:
       - NET_ADMIN
     environment:
