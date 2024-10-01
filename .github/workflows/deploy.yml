@@ -48,7 +48,11 @@ jobs:
     - name: Copy NGINX Dockerfile to server
       run: scp -o StrictHostKeyChecking=no -i key.pem .docker/nginx/dev/Dockerfile root@"${{ secrets.DROPLET_IP }}:/root/app/nginx/dev/Dockerfile"
 
-    # Ejecutar docker-compose para desplegar la aplicación
+        # Copiar Dockerfile de NGINX al servidor
+    - name: LS
+      run: ls -la
+
+      # Ejecutar docker-compose para desplegar la aplicación
     - name: Deploy application using docker-compose
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "cd /root/app && docker-compose up -d --build"
 
