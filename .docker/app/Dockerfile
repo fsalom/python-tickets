@@ -10,9 +10,12 @@ WORKDIR /code
 # Copia todos los archivos del proyecto en el directorio de trabajo
 COPY . /code/
 
-# Instala las dependencias
-RUN poetry export -f requirements.txt --without-hashes -o requirements.txt && \
-    pip install -r requirements.txt
+# Copiar el archivo pyproject.toml y poetry.lock al contenedor
+COPY pyproject.toml poetry.lock /code/
+
+# Instalar las dependencias sin crear un virtualenv adicional
+RUN poetry config virtualenvs.create false \
+    && poetry install --no-interaction --no-ansi
 
 # Exponer el puerto 8000
 EXPOSE 8000
