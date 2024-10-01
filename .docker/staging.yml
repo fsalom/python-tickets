@@ -6,7 +6,7 @@ services:
     restart: always
     build:
       context: ..  # Esto apunta al directorio superior donde están pyproject.toml y poetry.lock
-      dockerfile: ./docker-compose/.docker/app/Dockerfile  # Cambia la referencia al Dockerfile
+      dockerfile: ./.docker/app/Dockerfile  # Cambia la referencia al Dockerfile
     ports:
       - '127.0.0.1:8000:8000'
     env_file: './environments/staging.env'  # Ajusta la ruta del archivo .env si es necesario
