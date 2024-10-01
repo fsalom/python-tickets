@@ -27,24 +27,27 @@ jobs:
         echo "${{ secrets.DROPLET_SSH_KEY }}" | tr -d '\r' > key.pem
         chmod 600 key.pem
 
-    # Asegúrate de que el directorio para el proyecto existe en el servidor
+    # Crear los directorios necesarios en el servidor
     - name: Create project and environment directories on server
-      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "mkdir -p /root/app/environments"
+      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "mkdir -p /root/app/environments && mkdir -p /root/app/nginx"
 
-    # Copiar los archivos Docker necesarios al servidor
+    # Copiar archivos de entorno
     - name: Copy environment variables to server
       run: |
         scp -o StrictHostKeyChecking=no -i key.pem .docker/environments/staging.env root@"${{ secrets.DROPLET_IP }}:/root/app/environments/staging.env"
 
+    # Copiar archivo de configuración Docker Compose
     - name: Copy Docker Compose file to server
       run: scp -o StrictHostKeyChecking=no -i key.pem .docker/staging.yml root@"${{ secrets.DROPLET_IP }}:/root/app/docker-compose.yml"
 
+    # Copiar Dockerfile de la app al servidor
     - name: Copy Dockerfile to server
       run: scp -o StrictHostKeyChecking=no -i key.pem .docker/app/Dockerfile root@"${{ secrets.DROPLET_IP }}:/root/app/Dockerfile"
 
+    # Copiar la configuración de NGINX al servidor
     - name: Copy NGINX site configuration to server
       run: |
-        scp -o StrictHostKeyChecking=no -i key.pem .docker/nginx/pro/site-confs/default root@"${{ secrets.DROPLET_IP }}:/root/app/nginx.conf"
+        scp -o StrictHostKeyChecking=no -i key.pem .docker/nginx/pro/site-confs/default root@"${{ secrets.DROPLET_IP }}:/root/app/nginx/nginx.conf"
 
     # Ejecutar docker-compose para desplegar la aplicación
     - name: Deploy application using docker-compose
