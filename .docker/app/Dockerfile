@@ -1,24 +1,27 @@
-FROM rudodeveloper/python:3.12.0
+# Usar una imagen base oficial de Python
+FROM python:3.9-slim
 
-# Instala Poetry si no está en la imagen base
-RUN pip install poetry
-
-# Crea el directorio de la aplicación y establece el directorio de trabajo
-RUN mkdir /code
+# Establecer el directorio de trabajo en el contenedor
 WORKDIR /code
 
-# Copia todos los archivos del proyecto en el directorio de trabajo
-COPY . /code/
+# Instalar Poetry
+RUN pip install poetry
+
+# Verificar que Poetry está instalado correctamente
+RUN poetry --version
 
 # Copiar el archivo pyproject.toml y poetry.lock al contenedor
 COPY pyproject.toml poetry.lock /code/
 
-# Instalar las dependencias sin crear un virtualenv adicional
+# Instalar las dependencias con más detalles de depuración
 RUN poetry config virtualenvs.create false \
-    && poetry install --no-interaction --no-ansi
+    && poetry install --no-interaction --no-ansi -vvv  # Agregamos -vvv para mayor detalle
 
-# Exponer el puerto 8000
+# Copiar el resto del código de la aplicación
+COPY . /code/
+
+# Exponer el puerto de la aplicación
 EXPOSE 8000
 
-# Comando para iniciar Gunicorn
-CMD ["gunicorn", "infrastructure.django.settings.wsgi:application", "-b", "0.0.0.0:8000", "--workers=3", "--log-level=debug"]
+# Comando de arranque
+CMD ["gunicorn", "infrastructure.django.wsgi:application", "-k", "gevent", "-w", "3", "-b", ":8000", "--worker-connections=1000", "--timeout=4000", "--reload", "--capture-output", "--enable-stdio-inheritance", "--log-level=debug", "--access-logfile=-", "--log-file=/var/log/error.log"]
