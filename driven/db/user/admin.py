@@ -1,9 +1,7 @@
 from django.contrib import admin
+from django.contrib.auth.admin import UserAdmin
+
 from driven.db.user.models import UserDBO
-
-
-class UserAdmin(admin.ModelAdmin):
-    pass
 
 
 admin.site.register(UserDBO, UserAdmin)
