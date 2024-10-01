@@ -7,22 +7,14 @@ RUN pip install poetry
 RUN mkdir /code
 WORKDIR /code
 
-# Copiar el archivo pyproject.toml y poetry.lock al contenedor
-COPY . /code/
+# Copiar el archivo pyproject.toml y poetry.lock al contenedor desde el directorio raíz
+COPY ../../pyproject.toml ../../poetry.lock /code/
 
-# Listar todos los archivos y carpetas en el directorio /code para ver si se han copiado correctamente
-RUN ls -la /code
+# Instala las dependencias del proyecto utilizando Poetry
+RUN poetry config virtualenvs.create false && poetry install --no-interaction --no-ansi
 
-# Buscar archivos específicos dentro del contenedor para verificar su ubicación
-RUN find /code -name "pyproject.toml" || echo "pyproject.toml no encontrado"
-RUN find /code -name "poetry.lock" || echo "poetry.lock no encontrado"
-
-# Instalar las dependencias si los archivos se copiaron correctamente
-RUN cd ../
-RUN find /code -name "pyproject.toml" || echo "pyproject.toml no encontrado"
-RUN find /code -name "poetry.lock" || echo "poetry.lock no encontrado"
-RUN poetry export -f requirements.txt --without-hashes -o requirements.txt && \
-    pip install -r requirements.txt
+# Copia el resto de los archivos del proyecto al contenedor
+COPY ../../ /code/
 
 # Exponer el puerto 8000
 EXPOSE 8000
