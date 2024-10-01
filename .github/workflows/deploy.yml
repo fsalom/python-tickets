@@ -40,9 +40,13 @@ jobs:
     - name: Copy Dockerfile to server
       run: scp -o StrictHostKeyChecking=no -i key.pem .docker/app/Dockerfile root@"${{ secrets.DROPLET_IP }}:/root/myapp/Dockerfile"
 
-    - name: Copy NGINX configuration to server
+    - name: Copy NGINX site configuration to server
       run: |
-        scp -o StrictHostKeyChecking=no -i key.pem .docker/nginx/pro/nginx.conf root@"${{ secrets.DROPLET_IP }}:/root/myapp/nginx.conf"
+        scp -o StrictHostKeyChecking=no -i key.pem .docker/nginx/pro/site-confs/default root@"${{ secrets.DROPLET_IP }}:/root/myapp/nginx.conf"
+
+    - name: Copy Fail2Ban configuration to server
+      run: |
+        scp -o StrictHostKeyChecking=no -i key.pem .docker/nginx/pro/fail2ban/jail.local root@"${{ secrets.DROPLET_IP }}:/root/myapp/jail.local"
 
     - name: Copy database creation script to server
       run: scp -o StrictHostKeyChecking=no -i key.pem .docker/scripts/create_db_container.sh root@"${{ secrets.DROPLET_IP }}:/root/myapp/scripts/create_db_container.sh"
