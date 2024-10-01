@@ -27,18 +27,14 @@ jobs:
         echo "${{ secrets.DROPLET_SSH_KEY }}" | tr -d '\r' > key.pem
         chmod 600 key.pem
 
-    # Paso para asegurarse de que el directorio existe
-    - name: Create project and environment directories on server
-      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "mkdir -p /root/tickets/environments"
+    # Asegúrate de que el directorio para el proyecto existe en el servidor
+    - name: Create project directory on server
+      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "mkdir -p /root/tickets"
 
-    # Copia el archivo .env al servidor después de crear el directorio
+    # Copiar los archivos Docker necesarios al servidor
     - name: Copy environment variables to server
       run: |
         scp -o StrictHostKeyChecking=no -i key.pem .docker/environments/staging.env root@"${{ secrets.DROPLET_IP }}:/root/tickets/environments/staging.env"
-
-    # Verificar si el archivo .env fue copiado correctamente
-    - name: Verify that the environment file was copied correctly
-      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "ls -la /root/tickets/environments"
 
     - name: Copy Docker Compose file to server
       run: scp -o StrictHostKeyChecking=no -i key.pem .docker/staging.yml root@"${{ secrets.DROPLET_IP }}:/root/tickets/docker-compose.yml"
@@ -50,6 +46,7 @@ jobs:
       run: |
         scp -o StrictHostKeyChecking=no -i key.pem .docker/nginx/pro/site-confs/default root@"${{ secrets.DROPLET_IP }}:/root/tickets/nginx.conf"
 
+    # Ejecutar docker-compose para desplegar la aplicación
     - name: Deploy application using docker-compose
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "cd /root/tickets && docker-compose up -d --build"
 
