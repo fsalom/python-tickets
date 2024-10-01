@@ -5,7 +5,7 @@ services:
     container_name: web
     restart: always
     build:
-      context: ..  # Esto apunta al directorio superior donde están pyproject.toml y poetry.lock
+      context: .  # Esto apunta al directorio superior donde están pyproject.toml y poetry.lock
       dockerfile: .docker/app/Dockerfile  # Cambia la referencia al Dockerfile
     ports:
       - '127.0.0.1:8000:8000'
