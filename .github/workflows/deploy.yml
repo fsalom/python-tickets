@@ -48,9 +48,6 @@ jobs:
       run: |
         scp -o StrictHostKeyChecking=no -i key.pem .docker/nginx/pro/fail2ban/jail.local root@"${{ secrets.DROPLET_IP }}:/root/tickets/jail.local"
 
-    - name: Copy database creation script to server
-      run: scp -o StrictHostKeyChecking=no -i key.pem .docker/scripts/create_db_container.sh root@"${{ secrets.DROPLET_IP }}:/root/tickets/scripts/create_db_container.sh"
-
     - name: Ensure Docker and docker-compose are installed on the server
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "
         if command -v apt-get > /dev/null; then
