@@ -48,19 +48,11 @@ jobs:
       run: |
         scp -o StrictHostKeyChecking=no -i key.pem .docker/nginx/pro/fail2ban/jail.local root@"${{ secrets.DROPLET_IP }}:/root/tickets/jail.local"
 
-    - name: Ensure Docker and docker-compose are installed on the server
+    - name: Install Docker and docker-compose using official script
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "
-        if command -v apt-get > /dev/null; then
-          apt-get update;
-          apt-get remove -y containerd;
-          apt-get install -y docker.io docker-compose;
-        elif command -v yum > /dev/null; then
-          yum remove -y containerd;
-          yum install -y docker docker-compose;
-        else
-          echo 'No compatible package manager found.';
-          exit 1;
-        fi"
+        curl -fsSL https://get.docker.com -o get-docker.sh;
+        sh get-docker.sh;
+        apt-get install -y docker-compose"
 
     - name: Save Docker image and load on server
       run: |
