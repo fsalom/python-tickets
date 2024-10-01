@@ -1,5 +1,5 @@
 from django.contrib import admin
-from driven.db.product.models import ProductDBO
+from driven.db.product.models import ProductDBO, ProductPriceHistoryDBO
 
 
 class ProductAdmin(admin.ModelAdmin):
@@ -7,3 +7,4 @@ class ProductAdmin(admin.ModelAdmin):
 
 
 admin.site.register(ProductDBO, ProductAdmin)
+admin.site.register(ProductPriceHistoryDBO, ProductAdmin)
