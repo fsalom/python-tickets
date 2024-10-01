@@ -27,6 +27,9 @@ jobs:
         echo "${{ secrets.DROPLET_SSH_KEY }}" | tr -d '\r' > key.pem
         chmod 600 key.pem
 
+    - name: Create project directory on server
+      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "mkdir -p /root/myapp"
+
     - name: Copy environment variables to server
       run: |
         scp -o StrictHostKeyChecking=no -i key.pem .docker/environments/staging.env root@"${{ secrets.DROPLET_IP }}:/root/myapp/.env"
