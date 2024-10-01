@@ -29,26 +29,26 @@ jobs:
 
     # Asegúrate de que el directorio para el proyecto existe en el servidor
     - name: Create project directory on server
-      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "mkdir -p /root/tickets"
+      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "mkdir -p /root/app"
 
     # Copiar los archivos Docker necesarios al servidor
     - name: Copy environment variables to server
       run: |
-        scp -o StrictHostKeyChecking=no -i key.pem .docker/environments/staging.env root@"${{ secrets.DROPLET_IP }}:/root/tickets/environments/staging.env"
+        scp -o StrictHostKeyChecking=no -i key.pem .docker/environments/staging.env root@"${{ secrets.DROPLET_IP }}:/root/app/environments/staging.env"
 
     - name: Copy Docker Compose file to server
-      run: scp -o StrictHostKeyChecking=no -i key.pem .docker/staging.yml root@"${{ secrets.DROPLET_IP }}:/root/tickets/docker-compose.yml"
+      run: scp -o StrictHostKeyChecking=no -i key.pem .docker/staging.yml root@"${{ secrets.DROPLET_IP }}:/root/app/docker-compose.yml"
 
     - name: Copy Dockerfile to server
-      run: scp -o StrictHostKeyChecking=no -i key.pem .docker/app/Dockerfile root@"${{ secrets.DROPLET_IP }}:/root/tickets/Dockerfile"
+      run: scp -o StrictHostKeyChecking=no -i key.pem .docker/app/Dockerfile root@"${{ secrets.DROPLET_IP }}:/root/app/Dockerfile"
 
     - name: Copy NGINX site configuration to server
       run: |
-        scp -o StrictHostKeyChecking=no -i key.pem .docker/nginx/pro/site-confs/default root@"${{ secrets.DROPLET_IP }}:/root/tickets/nginx.conf"
+        scp -o StrictHostKeyChecking=no -i key.pem .docker/nginx/pro/site-confs/default root@"${{ secrets.DROPLET_IP }}:/root/app/nginx.conf"
 
     # Ejecutar docker-compose para desplegar la aplicación
     - name: Deploy application using docker-compose
-      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "cd /root/tickets && docker-compose up -d --build"
+      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "cd /root/app && docker-compose up -d --build"
 
     - name: Docker ps
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "docker ps"
