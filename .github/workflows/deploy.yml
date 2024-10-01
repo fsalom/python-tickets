@@ -51,8 +51,11 @@ jobs:
     - name: Ensure Docker and docker-compose are installed on the server
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "
         if command -v apt-get > /dev/null; then
-          apt-get update && apt-get install -y docker.io docker-compose;
+          apt-get update;
+          apt-get remove -y containerd;
+          apt-get install -y docker.io docker-compose;
         elif command -v yum > /dev/null; then
+          yum remove -y containerd;
           yum install -y docker docker-compose;
         else
           echo 'No compatible package manager found.';
