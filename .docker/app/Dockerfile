@@ -8,7 +8,10 @@ RUN mkdir /code
 WORKDIR /code
 
 # Copia todos los archivos del proyecto en el directorio de trabajo
-COPY . /code/
+COPY .. /code/
+
+COPY ./pyproject.toml ./poetry.lock /code/
+
 RUN ls -la /code
 # Instala las dependencias
 RUN poetry export -f requirements.txt --without-hashes -o requirements.txt && \
