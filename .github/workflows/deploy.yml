@@ -17,7 +17,7 @@ jobs:
       uses: docker/setup-buildx-action@v1
 
     - name: Build Docker image
-      run: docker build -f .docker/app/Dockerfile -t myapp:latest .
+      run: docker build -f .docker/app/Dockerfile -t tickets:latest .
 
     - name: Install SSH client
       run: sudo apt-get install -y openssh-client
@@ -28,28 +28,28 @@ jobs:
         chmod 600 key.pem
 
     - name: Create project directory on server
-      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "mkdir -p /root/myapp"
+      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "mkdir -p /root/tickets"
 
     - name: Copy environment variables to server
       run: |
-        scp -o StrictHostKeyChecking=no -i key.pem .docker/environments/staging.env root@"${{ secrets.DROPLET_IP }}:/root/myapp/.env"
+        scp -o StrictHostKeyChecking=no -i key.pem .docker/environments/staging.env root@"${{ secrets.DROPLET_IP }}:/root/tickets/.env"
 
     - name: Copy Docker Compose file to server
-      run: scp -o StrictHostKeyChecking=no -i key.pem .docker/staging.yml root@"${{ secrets.DROPLET_IP }}:/root/myapp/docker-compose.yml"
+      run: scp -o StrictHostKeyChecking=no -i key.pem .docker/staging.yml root@"${{ secrets.DROPLET_IP }}:/root/tickets/docker-compose.yml"
 
     - name: Copy Dockerfile to server
-      run: scp -o StrictHostKeyChecking=no -i key.pem .docker/app/Dockerfile root@"${{ secrets.DROPLET_IP }}:/root/myapp/Dockerfile"
+      run: scp -o StrictHostKeyChecking=no -i key.pem .docker/app/Dockerfile root@"${{ secrets.DROPLET_IP }}:/root/tickets/Dockerfile"
 
     - name: Copy NGINX site configuration to server
       run: |
-        scp -o StrictHostKeyChecking=no -i key.pem .docker/nginx/pro/site-confs/default root@"${{ secrets.DROPLET_IP }}:/root/myapp/nginx.conf"
+        scp -o StrictHostKeyChecking=no -i key.pem .docker/nginx/pro/site-confs/default root@"${{ secrets.DROPLET_IP }}:/root/tickets/nginx.conf"
 
     - name: Copy Fail2Ban configuration to server
       run: |
-        scp -o StrictHostKeyChecking=no -i key.pem .docker/nginx/pro/fail2ban/jail.local root@"${{ secrets.DROPLET_IP }}:/root/myapp/jail.local"
+        scp -o StrictHostKeyChecking=no -i key.pem .docker/nginx/pro/fail2ban/jail.local root@"${{ secrets.DROPLET_IP }}:/root/tickets/jail.local"
 
     - name: Copy database creation script to server
-      run: scp -o StrictHostKeyChecking=no -i key.pem .docker/scripts/create_db_container.sh root@"${{ secrets.DROPLET_IP }}:/root/myapp/scripts/create_db_container.sh"
+      run: scp -o StrictHostKeyChecking=no -i key.pem .docker/scripts/create_db_container.sh root@"${{ secrets.DROPLET_IP }}:/root/tickets/scripts/create_db_container.sh"
 
     - name: Ensure Docker and docker-compose are installed on the server
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "
@@ -62,15 +62,12 @@ jobs:
           exit 1;
         fi"
 
-    - name: Run the database container creation script
-      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "bash /root/myapp/scripts/create_db_container.sh"
-
     - name: Save Docker image and load on server
       run: |
-        docker save myapp:latest | bzip2 | ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" 'bunzip2 | docker load'
+        docker save tickets:latest | bzip2 | ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" 'bunzip2 | docker load'
 
     - name: Deploy application using docker-compose
-      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "cd /root/myapp && docker-compose up -d --build"
+      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "cd /root/tickets && docker-compose up -d --build"
 
     - name: Restart NGINX to serve the application
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "nginx -s reload"
