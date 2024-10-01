@@ -18,4 +18,4 @@ RUN poetry export -f requirements.txt --without-hashes -o requirements.txt && \
 EXPOSE 8000
 
 # Comando para iniciar Gunicorn
-CMD ["gunicorn", "boot.wsgi:application", "-b", "0.0.0.0:8000", "--workers=3", "--log-level=debug"]
+CMD ["gunicorn", "infrastructure.django.settings.wsgi:application", "-b", "0.0.0.0:8000", "--workers=3", "--log-level=debug"]

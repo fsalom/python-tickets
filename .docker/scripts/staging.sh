@@ -3,7 +3,7 @@
 set -o errexit
 set -o nounset
 
-export DJANGO_SETTINGS_MODULE=boot.settings.staticfiles
+export DJANGO_SETTINGS_MODULE=infrastructure.django.settings.staticfiles
 export ALLOWED_HOSTS=chatbot-staging.rudo.es,localhost
 export CSRF_TRUSTED_ORIGINS=https://chatbot-staging.rudo.es,http://localhost
 export DEBUG=0

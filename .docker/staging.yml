@@ -11,7 +11,7 @@ services:
       - '127.0.0.1:8000:8000'
     image: 'websource'
     env_file: 'environments/staging.env'
-    command: 'gunicorn boot.wsgi:application -k gevent -w 3 -b :8000 --worker-connections=1000 --timeout=4000 --reload --capture-output --enable-stdio-inheritance --log-level=debug --access-logfile=- --log-file=/var/log/error.log'
+    command: 'gunicorn infrastructure.django.wsgi:application -k gevent -w 3 -b :8000 --worker-connections=1000 --timeout=4000 --reload --capture-output --enable-stdio-inheritance --log-level=debug --access-logfile=- --log-file=/var/log/error.log'
     depends_on:
       - postgres
 
