@@ -10,6 +10,8 @@ WORKDIR /code
 # Copia todos los archivos del proyecto en el directorio de trabajo
 COPY . /code/
 
+RUN ls
+
 COPY pyproject.toml poetry.lock /code/
 
 # Instala las dependencias
