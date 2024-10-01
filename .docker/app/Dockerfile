@@ -4,18 +4,24 @@ FROM python:3.9-slim
 # Establecer el directorio de trabajo en el contenedor
 WORKDIR /code
 
-# Instalar Poetry
-RUN pip install poetry
+# Instalar dependencias del sistema para Poetry
+RUN apt-get update && apt-get install -y curl
 
-# Verificar que Poetry está instalado correctamente
+# Instalar Poetry utilizando el script oficial
+RUN curl -sSL https://install.python-poetry.org | python3 -
+
+# Agregar Poetry al PATH
+ENV PATH="/root/.local/bin:$PATH"
+
+# Verificar la instalación de Poetry
 RUN poetry --version
 
 # Copiar el archivo pyproject.toml y poetry.lock al contenedor
 COPY pyproject.toml poetry.lock /code/
 
-# Instalar las dependencias con más detalles de depuración
+# Instalar las dependencias con Poetry
 RUN poetry config virtualenvs.create false \
-    && poetry install --no-interaction --no-ansi -vvv  # Agregamos -vvv para mayor detalle
+    && poetry install --no-interaction --no-ansi -vvv  # Mantener el modo verbose
 
 # Copiar el resto del código de la aplicación
 COPY . /code/
@@ -24,4 +30,4 @@ COPY . /code/
 EXPOSE 8000
 
 # Comando de arranque
-CMD ["gunicorn", "infrastructure.django.wsgi:application", "-k", "gevent", "-w", "3", "-b", ":8000", "--worker-connections=1000", "--timeout=4000", "--reload", "--capture-output", "--enable-stdio-inheritance", "--log-level=debug", "--access-logfile=-", "--log-file=/var/log/error.log"]
+CMD ["gunicorn", "infrastructure.django.wsgi:application", "-k", "gevent", "-w", "3", "-b", ":8000", "--worker-connections=1000 --timeout=4000 --reload --capture-output --enable-stdio-inheritance --log-level=debug --access-logfile=- --log-file=/var/log/error.log"]
