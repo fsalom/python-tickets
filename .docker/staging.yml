@@ -5,7 +5,7 @@ services:
     container_name: web
     restart: always
     build:
-      context: .  # Apunta al directorio actual donde se encuentra docker-compose.yml
+      context: ..  # Apunta al directorio actual donde se encuentra docker-compose.yml
       dockerfile: .docker/app/Dockerfile  # Mantén la referencia correcta al Dockerfile dentro de .docker/app
     ports:
       - '127.0.0.1:8000:8000'
