@@ -7,15 +7,18 @@ RUN pip install poetry
 RUN mkdir /code
 WORKDIR /code
 
-# Copia todos los archivos del proyecto en el directorio de trabajo
-COPY ../ /code/
+# Copia el archivo pyproject.toml y poetry.lock al contenedor desde el contexto
+COPY pyproject.toml poetry.lock /code/
 
-COPY ../pyproject.toml ../poetry.lock /code/
-
+# Listar los archivos para verificar que se han copiado correctamente
 RUN ls -la /code
+
 # Instala las dependencias
 RUN poetry export -f requirements.txt --without-hashes -o requirements.txt && \
     pip install -r requirements.txt
+
+# Copia el resto de los archivos del proyecto al contenedor
+COPY . /code/
 
 # Exponer el puerto 8000
 EXPOSE 8000
