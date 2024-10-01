@@ -18,6 +18,7 @@ RUN find /code -name "pyproject.toml" || echo "pyproject.toml no encontrado"
 RUN find /code -name "poetry.lock" || echo "poetry.lock no encontrado"
 
 # Instalar las dependencias si los archivos se copiaron correctamente
+RUN cd ../
 RUN poetry export -f requirements.txt --without-hashes -o requirements.txt && \
     pip install -r requirements.txt
 
