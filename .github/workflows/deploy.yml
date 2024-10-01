@@ -28,8 +28,8 @@ jobs:
         chmod 600 key.pem
 
     # Asegúrate de que el directorio para el proyecto existe en el servidor
-    - name: Create project directory on server
-      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "mkdir -p /root/app"
+    - name: Create project and environment directories on server
+      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "mkdir -p /root/app/environments"
 
     # Copiar los archivos Docker necesarios al servidor
     - name: Copy environment variables to server
