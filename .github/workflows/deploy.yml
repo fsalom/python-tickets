@@ -38,7 +38,7 @@ jobs:
     # Copiar archivos de entorno al servidor
     - name: Copy environment variables to server
       run: |
-        scp -o StrictHostKeyChecking=no -i key.pem .docker/environments/staging.env root@"${{ secrets.DROPLET_IP }}:/root/app/environments/staging.env"
+        scp -o StrictHostKeyChecking=no -i key.pem .docker/environments/staging.env root@"${{ secrets.DROPLET_IP }}:/root/app/.docker/environments/staging.env"
 
     # Copiar Docker Compose file al servidor
     - name: Copy Docker Compose file to server
