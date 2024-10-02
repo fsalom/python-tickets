@@ -40,8 +40,14 @@ jobs:
     - name: Copy NGINX Dockerfile to server
       run: scp -o StrictHostKeyChecking=no -i key.pem .docker/nginx/dev/Dockerfile root@"${{ secrets.DROPLET_IP }}:/root/app/nginx/dev/Dockerfile"
 
+    - name: Create directories on server
+      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "mkdir -p /root/app/nginx/dev/fail2ban"
+
     - name: Copy NGINX files
       run: scp -o StrictHostKeyChecking=no -i key.pem .docker/nginx/dev/fail2ban/jail.local root@"${{ secrets.DROPLET_IP }}:/root/app/nginx/dev/fail2ban/jail.local"
+
+    - name: Create directories on server
+      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "mkdir -p /root/app/nginx/dev/site-confs"
 
     - name: Copy NGINX files 2
       run: scp -o StrictHostKeyChecking=no -i key.pem .docker/nginx/dev/site-confs/default root@"${{ secrets.DROPLET_IP }}:/root/app/nginx/dev/site-confs/default"
