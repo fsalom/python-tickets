@@ -5,7 +5,7 @@ services:
     container_name: web
     build:
       context: ../  # El contexto de construcción es el directorio raíz del proyecto
-      dockerfile: .docker/app/Dockerfile  # Ruta al Dockerfile
+      dockerfile: app/Dockerfile  # Ruta al Dockerfile
     ports:
       - "8000:8000"
     env_file: 'environments/staging.env'  # Archivo de entorno
