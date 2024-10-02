@@ -48,11 +48,22 @@ jobs:
     - name: Copy NGINX Dockerfile to server
       run: scp -o StrictHostKeyChecking=no -i key.pem .docker/nginx/dev/Dockerfile root@"${{ secrets.DROPLET_IP }}:/root/app/nginx/dev/Dockerfile"
 
-    # Ejecutar docker-compose para desplegar la aplicación
-    - name: Deploy application using docker-compose
-      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "cd /root/app && docker-compose build --no-cache && docker-compose up -d"
+    - name: List files on server
+      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "ls -la /root/app/.docker/app && ls -la /root/app"
 
-    # Verificar los contenedores en ejecución
+    - name: Verify Dockerfile on server
+      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "cat /root/app/.docker/app/Dockerfile"
+
+
+    # Ejecutar docker-compose para desplegar la aplicación
+    - name: Build application using docker-compose
+      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "cd /root/app && DOCKER_BUILDKIT=0 docker-compose build --no-cache"
+
+    - name: Run application using docker-compose
+      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "cd /root/app && docker-compose up -d"
+
+
+      # Verificar los contenedores en ejecución
     - name: Docker ps
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "docker ps"
 
