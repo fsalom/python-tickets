@@ -51,10 +51,6 @@ jobs:
     - name: List files on server
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "ls -la /root/app/.docker/app && ls -la /root/app"
 
-    - name: Verify Dockerfile on server
-      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "cat /root/app/.docker/app/Dockerfile"
-
-
     # Ejecutar docker-compose para desplegar la aplicación
     - name: Build application using docker-compose
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "cd /root/app && DOCKER_BUILDKIT=0 docker-compose build --no-cache"
