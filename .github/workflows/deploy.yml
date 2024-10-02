@@ -40,12 +40,15 @@ jobs:
     - name: Copy NGINX Dockerfile to server
       run: scp -o StrictHostKeyChecking=no -i key.pem .docker/nginx/dev/Dockerfile root@"${{ secrets.DROPLET_IP }}:/root/app/nginx/dev/Dockerfile"
 
-    - name: List files on server
-      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "ls -la /root/app/.docker/app && ls -la /root/app"
+    - name: Create code directory on server
+      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "mkdir -p /root/app/code"
 
     - name: Copy project files to server
       run: scp -o StrictHostKeyChecking=no -i key.pem -r ./* ./.??* root@"${{ secrets.DROPLET_IP }}:/root/app/code/"
-    
+
+    - name: List files on server
+      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "ls -la /root/app/.docker/app && ls -la /root/app"
+
     - name: Deploy application using docker-compose
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "cd /root/app && docker-compose build --no-cache && docker-compose up -d"
 
