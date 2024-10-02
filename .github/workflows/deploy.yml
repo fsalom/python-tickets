@@ -50,7 +50,7 @@ jobs:
 
     # Ejecutar docker-compose para desplegar la aplicación
     - name: Deploy application using docker-compose
-      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "cd /root/app && docker-compose up -d --build"
+      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "cd /root/app && docker-compose up -d --build --no-cache"
 
     # Verificar los contenedores en ejecución
     - name: Docker ps
