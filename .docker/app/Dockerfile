@@ -8,13 +8,10 @@ RUN mkdir /code
 WORKDIR /code
 
 # Copiar el archivo pyproject.toml y poetry.lock al contenedor desde el directorio raíz
-COPY ../../pyproject.toml ../../poetry.lock /code/
+COPY ../../ /code/
 
 # Instala las dependencias del proyecto utilizando Poetry
 RUN poetry config virtualenvs.create false && poetry install --no-interaction --no-ansi
-
-# Copia el resto de los archivos del proyecto al contenedor
-COPY ../../ /code/
 
 # Exponer el puerto 8000
 EXPOSE 8000
