@@ -4,7 +4,7 @@ services:
   web:
     container_name: web
     build:
-      context: ../../  # El contexto de construcción es el directorio raíz del proyecto
+      context: ../  # El contexto de construcción es el directorio raíz del proyecto
       dockerfile: Dockerfile  # Ruta al Dockerfile
     ports:
       - "8000:8000"
