@@ -27,39 +27,31 @@ jobs:
         echo "${{ secrets.DROPLET_SSH_KEY }}" | tr -d '\r' > key.pem
         chmod 600 key.pem
 
-    # Crear los directorios necesarios en el servidor
     - name: Create project and environment directories on server
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "mkdir -p /root/app/.docker/app && mkdir -p /root/app/environments && mkdir -p /root/app/nginx/dev"
 
-    # Copiar Dockerfile al servidor
     - name: Copy Dockerfile for app to server
       run: scp -o StrictHostKeyChecking=no -i key.pem .docker/app/Dockerfile root@"${{ secrets.DROPLET_IP }}:/root/app/.docker/app/Dockerfile"
 
-    # Copiar archivos de entorno al servidor
     - name: Copy environment variables to server
       run: |
         scp -o StrictHostKeyChecking=no -i key.pem .docker/environments/staging.env root@"${{ secrets.DROPLET_IP }}:/root/app/environments/staging.env"
 
-    # Copiar Docker Compose file al servidor
     - name: Copy Docker Compose file to server
       run: scp -o StrictHostKeyChecking=no -i key.pem .docker/staging.yml root@"${{ secrets.DROPLET_IP }}:/root/app/docker-compose.yml"
 
-    # Copiar Dockerfile de NGINX al servidor
     - name: Copy NGINX Dockerfile to server
       run: scp -o StrictHostKeyChecking=no -i key.pem .docker/nginx/dev/Dockerfile root@"${{ secrets.DROPLET_IP }}:/root/app/nginx/dev/Dockerfile"
 
     - name: List files on server
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "ls -la /root/app/.docker/app && ls -la /root/app"
 
-    # Ejecutar docker-compose para desplegar la aplicación
     - name: Deploy application using docker-compose
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "cd /root/app && docker-compose build --no-cache && docker-compose up -d"
 
-      # Verificar los contenedores en ejecución
     - name: Docker ps
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "docker ps"
 
-    # Limpiar la llave SSH del servidor
     - name: Clean up SSH key
       run: rm -f key.pem
 
