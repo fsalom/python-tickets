@@ -52,12 +52,8 @@ jobs:
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "ls -la /root/app/.docker/app && ls -la /root/app"
 
     # Ejecutar docker-compose para desplegar la aplicación
-    - name: Build application using docker-compose
-      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "cd /root/app && DOCKER_BUILDKIT=0 docker-compose build --no-cache"
-
-    - name: Run application using docker-compose
-      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "cd /root/app && docker-compose up -d"
-
+    - name: Deploy application using docker-compose
+      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "cd /root/app && docker-compose build --no-cache && docker-compose up -d"
 
       # Verificar los contenedores en ejecución
     - name: Docker ps
