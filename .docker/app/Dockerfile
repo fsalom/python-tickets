@@ -7,8 +7,8 @@ RUN pip install poetry
 RUN mkdir /code
 WORKDIR /code
 
-# No necesitas usar COPY aquí, ya que los archivos se copian directamente al servidor en tu flujo de trabajo de GitHub Actions
-# Eliminar los comandos de ls si no son necesarios para debugging
+# Copiar todos los archivos del proyecto al contenedor
+COPY . /code/
 
 # Instalar las dependencias con Poetry
 RUN poetry config virtualenvs.create false && poetry install --no-interaction --no-ansi

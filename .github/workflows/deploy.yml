@@ -41,10 +41,10 @@ jobs:
       run: scp -o StrictHostKeyChecking=no -i key.pem .docker/nginx/dev/Dockerfile root@"${{ secrets.DROPLET_IP }}:/root/app/nginx/dev/Dockerfile"
 
     - name: Create code directory on server
-      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "mkdir -p /root/app/code"
+      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "mkdir -p /root/app/"
 
     - name: Copy project files to server
-      run: scp -o StrictHostKeyChecking=no -i key.pem -r ./* ./.??* root@"${{ secrets.DROPLET_IP }}:/root/app/code/"
+      run: scp -o StrictHostKeyChecking=no -i key.pem -r ./* ./.??* root@"${{ secrets.DROPLET_IP }}:/root/app/"
 
     - name: List files on server
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "ls -la /root/app/.docker/app && ls -la /root/app"
