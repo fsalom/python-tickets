@@ -5,10 +5,10 @@ services:
     container_name: web
     build:
       context: ../../  # El contexto de construcción es el directorio raíz del proyecto
-      dockerfile: .docker/app/Dockerfile  # Ruta al Dockerfile
+      dockerfile: Dockerfile  # Ruta al Dockerfile
     ports:
       - "8000:8000"
-    env_file: '.docker/environments/staging.env'  # Archivo de entorno
+    env_file: 'environments/staging.env'  # Archivo de entorno
     command: "gunicorn infrastructure.django.wsgi:application -b 0.0.0.0:8000 --workers=3 --log-level=debug"
     depends_on:
       - postgres
@@ -17,7 +17,7 @@ services:
     container_name: 'postgres'
     restart: always
     image: 'postgres:16.3'
-    env_file: '.docker/environments/staging.env'
+    env_file: 'environments/staging.env'
     ports:
       - '5432:5432'
     volumes:
@@ -26,7 +26,7 @@ services:
   nginx:
     container_name: 'nginx'
     restart: always
-    build: '.docker/nginx/dev'  # Asegúrate de que esta ruta exista
+    build: 'nginx/dev'  # Asegúrate de que esta ruta exista
     cap_add:
       - NET_ADMIN
     environment:
