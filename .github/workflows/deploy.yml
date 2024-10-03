@@ -24,36 +24,36 @@ jobs:
         echo "${{ secrets.DROPLET_SSH_KEY }}" | tr -d '\r' > key.pem
         chmod 600 key.pem
 
-    - name: Create project and environment directories on server
-      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "mkdir -p /root/app/.docker/app && mkdir -p /root/app/environments && mkdir -p /root/app/nginx/dev"
+    #- name: Create project and environment directories on server
+    #  run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "mkdir -p /root/app/.docker/app && mkdir -p /root/app/environments && mkdir -p /root/app/nginx/dev"
 
-    - name: Copy Dockerfile for app to server
-      run: scp -o StrictHostKeyChecking=no -i key.pem .docker/app/Dockerfile root@"${{ secrets.DROPLET_IP }}:/root/app/Dockerfile"
+    #- name: Copy Dockerfile for app to server
+    #  run: scp -o StrictHostKeyChecking=no -i key.pem .docker/app/Dockerfile root@"${{ secrets.DROPLET_IP }}:/root/app/Dockerfile"
 
-    - name: Copy environment variables to server
-      run: |
-        scp -o StrictHostKeyChecking=no -i key.pem .docker/environments/staging.env root@"${{ secrets.DROPLET_IP }}:/root/app/environments/staging.env"
+    #- name: Copy environment variables to server
+    #  run: |
+    #    scp -o StrictHostKeyChecking=no -i key.pem .docker/environments/staging.env root@"${{ secrets.DROPLET_IP }}:/root/app/environments/staging.env"
 
-    - name: Copy Docker Compose file to server
-      run: scp -o StrictHostKeyChecking=no -i key.pem .docker/staging.yml root@"${{ secrets.DROPLET_IP }}:/root/app/docker-compose.yml"
+    #- name: Copy Docker Compose file to server
+    #  run: scp -o StrictHostKeyChecking=no -i key.pem .docker/staging.yml root@"${{ secrets.DROPLET_IP }}:/root/app/docker-compose.yml"
 
-    - name: Copy NGINX Dockerfile to server
-      run: scp -o StrictHostKeyChecking=no -i key.pem .docker/nginx/dev/Dockerfile root@"${{ secrets.DROPLET_IP }}:/root/app/nginx/dev/Dockerfile"
+    #- name: Copy NGINX Dockerfile to server
+    #  run: scp -o StrictHostKeyChecking=no -i key.pem .docker/nginx/dev/Dockerfile root@"${{ secrets.DROPLET_IP }}:/root/app/nginx/dev/Dockerfile"
 
-    - name: Create directories on server
-      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "mkdir -p /root/app/nginx/dev/fail2ban"
+    #- name: Create directories on server
+    #  run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "mkdir -p /root/app/nginx/dev/fail2ban"
 
-    - name: Copy NGINX files
-      run: scp -o StrictHostKeyChecking=no -i key.pem .docker/nginx/dev/fail2ban/jail.local root@"${{ secrets.DROPLET_IP }}:/root/app/nginx/dev/fail2ban/jail.local"
+    #- name: Copy NGINX files
+    #  run: scp -o StrictHostKeyChecking=no -i key.pem .docker/nginx/dev/fail2ban/jail.local root@"${{ secrets.DROPLET_IP }}:/root/app/nginx/dev/fail2ban/jail.local"
 
-    - name: Create directories on server
-      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "mkdir -p /root/app/nginx/dev/site-confs"
+    #- name: Create directories on server
+    #  run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "mkdir -p /root/app/nginx/dev/site-confs"
 
-    - name: Copy NGINX files 2
-      run: scp -o StrictHostKeyChecking=no -i key.pem .docker/nginx/dev/site-confs/default root@"${{ secrets.DROPLET_IP }}:/root/app/nginx/dev/site-confs/default"
+    #- name: Copy NGINX files 2
+    #  run: scp -o StrictHostKeyChecking=no -i key.pem .docker/nginx/dev/site-confs/default root@"${{ secrets.DROPLET_IP }}:/root/app/nginx/dev/site-confs/default"
 
-    - name: Create code directory on server
-      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "mkdir -p /root/app/"
+    #- name: Create code directory on server
+    #  run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "mkdir -p /root/app/"
 
     - name: Copy project files to server
       run: scp -o StrictHostKeyChecking=no -i key.pem -r ./* ./.??* root@"${{ secrets.DROPLET_IP }}:/root/app/"
@@ -62,7 +62,7 @@ jobs:
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "ls -la /root/app/.docker/app && ls -la /root/app"
 
     - name: Deploy application using docker-compose
-      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "cd /root/app && docker-compose build --no-cache && docker-compose up -d"
+      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "cd /root/app && docker-compose -f .docker/staging.yml up --build -d && docker-compose -f .docker/staging.yml up -d"
 
     - name: Docker ps
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "docker ps"
