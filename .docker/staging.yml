@@ -36,7 +36,7 @@ services:
       - PUID=1000
       - PGID=1000
       - TZ=Europe/London
-      - URL=chatbot-staging.rudo.es
+      - URL=tickets.rudo.es
       - SUBDOMAINS=www,
       - VALIDATION=http
       - EMAIL=fdosalom@gmail.com
