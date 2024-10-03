@@ -24,7 +24,7 @@ services:
     restart: unless-stopped
     image: 'websource'
     env_file: 'environments/staging.env'
-    command: 'python -m celery -A config worker -l debug'
+    command: 'python -m celery -A infrastructure.django worker -l debug'
     depends_on:
       - app
     networks:
