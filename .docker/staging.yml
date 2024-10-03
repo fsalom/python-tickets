@@ -43,8 +43,7 @@ services:
     volumes:
       - 'nginx:/config'
     depends_on:
-      - django
-      - fastapi
+      - app
     ports:
       - '443:443'
       - '80:80'  # Opcional
