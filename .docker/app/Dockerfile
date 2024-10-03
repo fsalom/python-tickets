@@ -1,5 +1,6 @@
 FROM rudodeveloper/python:3.12.0
 
+RUN apt-get update && apt-get install -y supervisor
 # Instalar Poetry
 RUN pip install poetry
 
