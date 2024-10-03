@@ -33,9 +33,6 @@ jobs:
     - name: Docker ps
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "docker ps"
 
-    - name: Docker django
-      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "docker exec it app manage.py collectstatic"
-
     - name: Clean up SSH key
       run: rm -f key.pem
 
