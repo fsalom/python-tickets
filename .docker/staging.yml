@@ -1,27 +1,18 @@
 version: '3.8'
 
 services:
-  django:
-    container_name: django
+  app:
+    container_name: app
     build:
       context: ..  # El contexto de construcción es el directorio raíz del proyecto
       dockerfile: .docker/app/Dockerfile  # Ruta al Dockerfile
     ports:
-      - "8000:8000"
+      - "8000:8000"  # Puerto para Django
+      - "8001:8001"  # Puerto para FastAPI
     env_file: '.docker/environments/staging.env'  # Archivo de entorno
-    command: "gunicorn infrastructure.django.wsgi:application -b 0.0.0.0:8000 --workers=3 --log-level=debug"
-    depends_on:
-      - postgres
-
-  fastapi:
-    container_name: fastapi
-    build:
-      context: ..  # El contexto de construcción es el mismo, pero puedes tener un Dockerfile separado para FastAPI si lo prefieres
-      dockerfile:  .docker/app/Dockerfile  # Puedes usar un Dockerfile específico para FastAPI si es necesario
-    ports:
-      - "8001:8001"  # Puerto diferente para FastAPI
-    env_file: '.docker/environments/staging.env'  # Archivo de entorno
-    command: "uvicorn main:app --host 0.0.0.0 --port 8001 --workers 3 --log-level debug"
+    command: >
+      sh -c "gunicorn infrastructure.django.wsgi:application -b 0.0.0.0:8000 --workers=3 --log-level=debug & 
+              uvicorn main:app --host 0.0.0.0 --port 8001 --workers 3 --log-level debug"
     depends_on:
       - postgres
 
