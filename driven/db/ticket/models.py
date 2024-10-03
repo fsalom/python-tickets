@@ -18,6 +18,7 @@ class TicketDBO(models.Model):
         UserDBO, on_delete=models.CASCADE, related_name="tickets"
     )
     total = models.FloatField()
+    id_ticket = models.CharField(max_length=50, unique=True)
 
     def __str__(self):
         return f"Ticket {self.id}"
