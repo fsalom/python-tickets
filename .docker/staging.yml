@@ -29,7 +29,7 @@ services:
   nginx:
     container_name: 'nginx'
     restart: always
-    build: '.docker/nginx/dev'  # Asegúrate de que esta ruta exista
+    build: 'nginx/dev'  # Asegúrate de que esta ruta exista
     cap_add:
       - NET_ADMIN
     environment:
