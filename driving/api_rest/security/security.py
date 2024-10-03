@@ -3,8 +3,8 @@ from asgiref.sync import sync_to_async
 from fastapi import Depends, status, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 
-from application.di.authentication.injector import AuthenticationInjector
 from application.services.authentication_services import AuthenticationServices
+from infrastructure.di.authentication.injector import AuthenticationInjector
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
