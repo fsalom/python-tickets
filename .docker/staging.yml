@@ -19,28 +19,6 @@ services:
     networks:
       - dashboard
 
-  celery_worker:
-    container_name: 'celery_worker'
-    restart: unless-stopped
-    image: 'websource'
-    env_file: 'environments/staging.env'
-    command: 'python -m celery -A infrastructure.django worker -l debug'
-    depends_on:
-      - app
-    networks:
-      - dashboard
-
-  celery_beat:
-    container_name: 'celery_beat'
-    restart: unless-stopped
-    image: 'websource'
-    env_file: 'environments/staging.env'
-    command: 'python -m celery -A config beat --pidfile= -l debug'
-    depends_on:
-      - app
-    networks:
-      - dashboard
-
   postgres:
     container_name: 'postgres'
     restart: always
