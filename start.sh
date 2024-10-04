@@ -1,8 +1,5 @@
 #!/bin/bash
 
-Copy code
-#!/bin/bash
-
 # Ejecutar migraciones de Django
 echo "Ejecutando migraciones de Django..."
 python manage.py migrate
