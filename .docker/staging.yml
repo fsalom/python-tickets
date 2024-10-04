@@ -3,21 +3,40 @@ version: '3.8'
 services:
   app:
     container_name: app
-    build:
-      context: ..  # El contexto de construcción es el directorio raíz del proyecto
-      dockerfile: .docker/app/Dockerfile  # Ruta al Dockerfile
+    image: websource
     ports:
-      - "8000:8000"  # Puerto para Django
-      - "8001:8001"  # Puerto para FastAPI
-    env_file: 'environments/staging.env'  # Archivo de entorno
-    image: 'websource'
+      - 8001:8001
     volumes:
       - mediadata:/media
       - staticdata:/static
+    env_file: 'environments/staging.env'
+    command: uvicorn app.wsgi:app --port=3000 --host=0.0.0.0 --reload
+    restart: on-failure
+    depends_on:
+      - postgres
+      - admin
+    networks:
+      - dashboard
+    build:
+      context: ..  # El contexto de construcción es el directorio raíz del proyecto
+      dockerfile: .docker/app/Dockerfile  # Ruta al Dockerfile
+  admin:
+    container_name: admin
+    image: websource
+    ports:
+      - 8000:8000
+    volumes:
+      - mediadata:/media
+      - staticdata:/static
+    env_file: 'environments/staging.env'
     depends_on:
       - postgres
     networks:
       - dashboard
+    command: >
+      bash -c "python3 manage.py makemigrations
+      && python3 manage.py migrate
+      && python3 manage.py runserver 0.0.0.0:8000"
 
   postgres:
     container_name: 'postgres'
