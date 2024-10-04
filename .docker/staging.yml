@@ -10,7 +10,7 @@ services:
       - mediadata:/media
       - staticdata:/static
     env_file: 'environments/staging.env'
-    command: uvicorn app.wsgi:app --port=3000 --host=0.0.0.0 --reload
+    command: uvicorn infrastructure.django.wsgi:app --port=8001 --host=0.0.0.0 --reload
     restart: on-failure
     depends_on:
       - postgres
