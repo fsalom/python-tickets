@@ -1,6 +1,6 @@
 FROM rudodeveloper/python:3.12.0
 
-RUN pip install supervisor
+RUN apt-get update && apt-get install -y supervisor
 # Instalar Poetry
 RUN pip install poetry
 
@@ -19,7 +19,7 @@ RUN poetry config virtualenvs.create false && poetry install --no-interaction --
 # Ejecutar migraciones en ENTRYPOINT
 #ENTRYPOINT ["bash", "-c", "python manage.py migrate"]
 #CMD ["/code/start.sh"]
-COPY supervisord.conf /etc/supervisor/supervisord.conf
+COPY supervisord.conf /etc/supervisor/conf.d/supervisord.conf
 
 # Exponer puertos para la aplicación
 EXPOSE 8000 8001
