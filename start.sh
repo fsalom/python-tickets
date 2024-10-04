@@ -4,6 +4,9 @@
 echo "Ejecutando migraciones de Django..."
 python manage.py migrate
 
+echo "Ejecutando servidor"
+python manage.py runserver
+
 # Iniciar Gunicorn con FastAPI
 echo "Iniciando Gunicorn con FastAPI..."
 gunicorn main:app -w 4 -k uvicorn.workers.UvicornWorker --bind 0.0.0.0:8000
