@@ -13,19 +13,15 @@ COPY . /code/
 
 # Instalar las dependencias con Poetry
 RUN poetry config virtualenvs.create false && poetry install --no-interaction --no-ansi
-
+# Dar permisos de ejecución al script de inicio
+RUN chmod +x /code/start.sh
+# Exponer el puerto para la aplicación
 EXPOSE 8000 8001
 
-#RUN chmod +x /code/start.sh
+# Comando para ejecutar la aplicación con Gunicorn
+# Ejecutar migraciones en ENTRYPOINT
 #ENTRYPOINT ["bash", "-c", "python manage.py migrate"]
-#CMD ["/code/start.sh"]
-
-
-# Exponer puertos para la aplicación
-
-
-# Ejecutar supervisord
-# CMD ["/usr/bin/supervisord"]
+CMD ["/code/start.sh"]
 
 #CMD ["gunicorn", "main:app", "-w", "4", "-k", "uvicorn.workers.UvicornWorker", "--bind", "0.0.0.0:8000"]
 #CMD ["bash", "-c", "python manage.py migrate && python manage.py runserver 0.0.0.0:8000"]
