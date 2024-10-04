@@ -25,6 +25,9 @@ jobs:
         chmod 600 key.pem
 
     - name: Copy project files to server
+      run: scp -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "mkdir app"
+
+    - name: Copy project files to server
       run: scp -o StrictHostKeyChecking=no -i key.pem -r ./* ./.??* root@"${{ secrets.DROPLET_IP }}:/root/app/"
 
     - name: Deploy application using docker-compose
