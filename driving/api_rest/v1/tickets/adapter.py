@@ -1,9 +1,8 @@
 from typing import Annotated
 
-from asgiref.sync import sync_to_async
 from fastapi import APIRouter, Depends
 
-from application.di.tickets.injector import TicketInjector
+from infrastructure.di.tickets.injector import TicketInjector
 from application.services.ticket_services import TicketServices
 from domain.user import User
 from driving.api_rest.security.security import get_user_or_refuse
