@@ -7,6 +7,9 @@ Copy code
 echo "Ejecutando migraciones de Django..."
 python manage.py migrate
 
+echo "Ejecutando collecstatic de Django..."
+python manage.py collecstatic
+
 # Iniciar el servidor de Django en segundo plano
 echo "Iniciando el servidor de Django en segundo plano..."
 python manage.py runserver 0.0.0.0:8000
