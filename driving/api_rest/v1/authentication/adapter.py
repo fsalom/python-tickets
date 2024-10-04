@@ -2,10 +2,10 @@ from fastapi import APIRouter, Depends, status
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 
-from application.di.authentication.injector import AuthenticationInjector
 from application.ports.driving.authentication_service_port import AuthenticationServicePort
 from driving.api_rest.v1.authentication.mapper import AuthenticationDTOMapper
 from driving.api_rest.v1.authentication.models import AuthenticationResponse, AuthenticationRequest
+from infrastructure.di.authentication.injector import AuthenticationInjector
 
 auth_router = APIRouter()
 
