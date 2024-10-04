@@ -25,7 +25,7 @@ services:
     restart: unless-stopped
     image: 'websource'
     env_file: 'environments/staging.env'
-    command: 'python -m celery -A infrastructure.django worker -l debug'
+    command: 'python -m celery -A infrastructure.django worker -l debug --pool=solo'
     depends_on:
       - app
     networks:
@@ -36,7 +36,7 @@ services:
     restart: unless-stopped
     image: 'websource'
     env_file: 'environments/staging.env'
-    command: 'python -m celery -A infrastructure.django beat --pidfile= -l debug'
+    command: 'python -m celery -A infrastructure.django beat --pidfile= -l debug --pool=solo'
     depends_on:
       - app
     networks:
