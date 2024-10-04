@@ -110,6 +110,8 @@ volumes:
   redisdata:
   cachedata:
   memcached:
+  mediadata:
+  staticdata:
 
 networks:
   dashboard:
