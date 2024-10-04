@@ -35,4 +35,3 @@ jobs:
 
     - name: Clean up SSH key
       run: rm -f key.pem
-
