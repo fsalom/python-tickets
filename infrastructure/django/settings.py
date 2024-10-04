@@ -158,3 +158,19 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+BROKER_TRANSPORT = "redis"
+CELERY_BROKER_URL = f"redis://:{os.environ.get('CACHE_PASSWORD')}@redis:6379/0"
+CELERY_RESULT_BACKEND = f"redis://:{os.environ.get('CACHE_PASSWORD')}@redis:6379/0"
+CELERY_ACCEPT_CONTENT = ["application/json"]
+CELERY_RESULT_SERIALIZER = "json"
+CELERY_TASK_SERIALIZER = "json"
+CELERY_TIMEZONE = "Europe/Madrid"
+CELERY_ENABLE_UTC = True
+
+CACHES = {
+    "default": {
+        "BACKEND": "django.core.cache.backends.memcached.MemcachedCache",
+        "LOCATION": os.environ.get("CACHE_LOCATION", "localhost:11211"),
+    }
+}
