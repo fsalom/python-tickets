@@ -16,7 +16,7 @@ RUN poetry config virtualenvs.create false && poetry install --no-interaction --
 # Dar permisos de ejecución al script de inicio
 RUN chmod +x /code/start.sh
 # Exponer el puerto para la aplicación
-EXPOSE 8000
+EXPOSE 8000 8001
 
 # Comando para ejecutar la aplicación con Gunicorn
 # Ejecutar migraciones en ENTRYPOINT
