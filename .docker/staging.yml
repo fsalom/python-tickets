@@ -13,13 +13,10 @@ services:
     image: 'websource'
     command: "supervisord -c supervisord.conf"
     volumes:
-      - cachedata:/cache
       - mediadata:/media
       - staticdata:/static
     depends_on:
-      - redis
       - postgres
-      - cache
     networks:
       - dashboard
 
@@ -42,29 +39,6 @@ services:
     command: 'python -m celery -A infrastructure.django beat --pidfile= -l debug'
     depends_on:
       - app
-    networks:
-      - dashboard
-
-  redis:
-    container_name: 'redis'
-    restart: unless-stopped
-    image: 'redis:3.2.0'
-    command: redis-server --requirepass 12345678A
-    expose:
-      - '6379'
-    volumes:
-      - 'redisdata:/data'
-    networks:
-      - dashboard
-
-  cache:
-    container_name: cache
-    restart: unless-stopped
-    image: memcached:1.6.12-alpine
-    ports:
-      - '11211:11211'
-    volumes:
-      - 'memcached:/memcached'
     networks:
       - dashboard
 
@@ -107,9 +81,6 @@ services:
 volumes:
   nginx:
   pgdata:
-  redisdata:
-  cachedata:
-  memcached:
   mediadata:
   staticdata:
 
