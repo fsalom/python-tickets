@@ -26,6 +26,7 @@ SECRET_KEY = 'django-insecure-i9i!8-fp!5936ig)gmf)1gl72kwkmdx^@pf9&8+-*=&5z=+07x
 DEBUG = True
 
 ALLOWED_HOSTS = ["*"]
+CSRF_TRUSTED_ORIGINS = ['https://tickets.rudo.es','https://127.0.0.1']
 
 # Application definition
 DJANGO_APPS = [
