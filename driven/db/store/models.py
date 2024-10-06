@@ -6,3 +6,7 @@ class StoreDBO(models.Model):
 
     def __str__(self):
         return f"{self.location_info}"
+
+    class Meta:
+        verbose_name = "Localización"
+        verbose_name_plural = "Localizaciones"
