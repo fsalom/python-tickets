@@ -156,7 +156,7 @@ STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
-
+BASE_DIR = Path(__file__).resolve().parent.parent
 # Directorios donde buscar archivos estáticos adicionales
 STATICFILES_DIRS = [
    os.path.join(BASE_DIR, 'static'),  # Tu carpeta 'static' local
