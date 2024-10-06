@@ -9,6 +9,10 @@ class ProductDBO(models.Model):
     def __str__(self):
         return self.name
 
+    class Meta:
+        verbose_name = "Producto"
+        verbose_name_plural = "Productos"
+
 
 class ProductPriceHistoryDBO(models.Model):
     product = models.ForeignKey(ProductDBO, verbose_name="Product", on_delete=models.CASCADE, related_name='price_history')
@@ -19,3 +23,7 @@ class ProductPriceHistoryDBO(models.Model):
 
     def __str__(self):
         return f"{self.price}€"
+
+    class Meta:
+        verbose_name = "Relación historia precio producto"
+        verbose_name_plural = "Relación historia precio productos"
