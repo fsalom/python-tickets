@@ -11,3 +11,7 @@ class MailDBO(models.Model):
     )
     subject = models.CharField(max_length=150, default="")
     content = models.TextField()
+
+    class Meta:
+        verbose_name = "Mail"
+        verbose_name_plural = "Mails"
