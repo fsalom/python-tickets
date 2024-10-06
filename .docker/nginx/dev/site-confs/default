@@ -6,7 +6,7 @@ server {
     client_max_body_size 512M;
 
     location /static/ {
-        alias /static/;
+        alias /infrastructure/static/;
     }
 
     location /media/ {
@@ -58,7 +58,7 @@ server {
     }
 
  location /static/ {
-     alias /static/;
+     alias /infrastructure/static/;
  }
 
  location /media/ {
