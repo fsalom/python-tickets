@@ -23,6 +23,10 @@ class TicketDBO(models.Model):
     def __str__(self):
         return f"Ticket {self.id}"
 
+    class Meta:
+        verbose_name = "Ticket"
+        verbose_name_plural = "Tickets"
+
 
 class TicketProductDBO(models.Model):
     ticket = models.ForeignKey(
@@ -39,3 +43,7 @@ class TicketProductDBO(models.Model):
 
     def __str__(self):
         return f"Ticket {self.ticket.id} - {self.product.name} - Qty: {self.quantity} - Price: {self.history_price.price}"
+
+    class Meta:
+        verbose_name = "Producto del ticket"
+        verbose_name_plural = "Productos de los tickets"
