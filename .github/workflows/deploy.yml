@@ -13,9 +13,6 @@ jobs:
     - name: Checkout repository
       uses: actions/checkout@v2
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v1
-
     - name: Install SSH client
       run: sudo apt-get install -y openssh-client
 
@@ -24,8 +21,15 @@ jobs:
         echo "${{ secrets.DROPLET_SSH_KEY }}" | tr -d '\r' > key.pem
         chmod 600 key.pem
 
-    - name: Copy project files to server
-      run: scp -o StrictHostKeyChecking=no -i key.pem -r ./* ./.??* root@"${{ secrets.DROPLET_IP }}:/root/app/"
+    - name: Clone repository on server
+      run: |
+        ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "
+          if [ ! -d /root/app ]; then
+            git clone https://github.com/fsalom/python-mail-server.git /root/app;
+          else
+            cd /root/app && git pull origin main;
+          fi
+        "
 
     - name: Deploy application using docker-compose
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "cd /root/app && docker-compose -f .docker/staging.yml up --build -d && docker-compose -f .docker/staging.yml up -d"
