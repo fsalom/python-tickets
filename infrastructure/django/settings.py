@@ -150,7 +150,7 @@ USE_I18N = True
 
 USE_TZ = True
 
-STATIC_URL = '/static/'
+STATIC_URL = '/infrastructure/static/'
 
 # Donde Django recolectará todos los archivos estáticos
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
