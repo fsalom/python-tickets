@@ -2,7 +2,6 @@ import os
 import django
 
 
-# Configura Django antes de hacer cualquier importación relacionada
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'infrastructure.django.settings')
 django.setup()  # Asegura que las apps están listas
 
