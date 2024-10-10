@@ -23,7 +23,7 @@ jobs:
 
     - name: Clean old images/container/volumes
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "docker system prune -a -f"
-      
+
     - name: Clone repository on server
       run: |
         ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "
