@@ -21,9 +21,6 @@ jobs:
         echo "${{ secrets.DROPLET_SSH_KEY }}" | tr -d '\r' > key.pem
         chmod 600 key.pem
 
-    - name: Clean old images/container/volumes
-      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "docker system prune -a -f"
-
     - name: Clone repository on server
       run: |
         ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "
@@ -33,6 +30,9 @@ jobs:
             cd /root/app && git pull origin main;
           fi
         "
+
+    - name: Clean old images/container/volumes
+      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "docker system prune -a -f"
 
     - name: Deploy application using docker-compose
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "cd /root/app && docker-compose -f .docker/staging.yml up --build -d && docker-compose -f .docker/staging.yml up -d"
