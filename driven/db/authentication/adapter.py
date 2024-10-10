@@ -13,6 +13,21 @@ class AuthenticationDBRepositoryAdapter(AuthenticationDBRepositoryPort):
     def logout(self):
         pass
 
+    def refresh(self, refresh_token: str, client_id: str) -> Tokens | None:
+        if refresh_token is None:
+            return None
+        try:
+            application = Application.objects.get(client_id=client_id)
+        except Application.DoesNotExist:
+            return None
+
+        try:
+            refresh_token = RefreshToken.objects.get(token=refresh_token)
+        except RefreshToken.DoesNotExist:
+            return None
+
+
+
     def login(self, username: str, password: str, client_id: str) -> Tokens | None:
         user = authenticate(username=username, password=password)
         if user is None:
