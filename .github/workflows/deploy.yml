@@ -40,7 +40,7 @@ jobs:
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "sudo apt-get update && sudo apt-get install docker-compose -y"
 
     - name: Clean old images/container/volumes
-      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "docker system prune -a -f"
+      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "docker image prune -a -f"
 
     - name: Deploy application using docker-compose
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "cd /root/app && docker-compose -f .docker/staging.yml up --build -d && docker-compose -f .docker/staging.yml up -d"
