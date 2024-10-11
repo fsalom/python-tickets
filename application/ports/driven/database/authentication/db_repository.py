@@ -10,9 +10,13 @@ class AuthenticationDBRepositoryPort(ABC):
         pass
 
     @abstractmethod
-    def logout(self):
+    def logout(self, user: User) -> bool:
         pass
 
     @abstractmethod
     def get_user(self, token: str) -> User | None:
+        pass
+
+    @abstractmethod
+    def refresh(self, refresh_token: str, client_id: str) -> Tokens | None:
         pass

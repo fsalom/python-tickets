@@ -10,5 +10,13 @@ class AuthenticationServicePort(ABC):
         pass
 
     @abstractmethod
+    def refresh(self, refresh_token: str, client_id: str) -> Tokens | None:
+        pass
+
+    @abstractmethod
     def get_user(self, token: str) -> User | None:
+        pass
+
+    @abstractmethod
+    def logout(self, user: User):
         pass
