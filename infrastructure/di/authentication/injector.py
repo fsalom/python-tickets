@@ -1,5 +1,3 @@
-from fastapi.security import OAuth2PasswordBearer
-
 from application.services.authentication_services import AuthenticationServices
 from driven.db.authentication.adapter import AuthenticationDBRepositoryAdapter
 
