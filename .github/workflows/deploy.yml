@@ -28,10 +28,9 @@ jobs:
             cd /root/app && git pull origin main;
           fi
         "
-
-    - name: Clean old images/container/volumes
-      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "docker system prune -a -f"
-
+    - name: Install docker
+      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "curl -fsSL https://get.docker.com | sudo bash"
+      
     - name: Deploy application using docker-compose
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "cd /root/app && docker-compose -f .docker/staging.yml up --build -d && docker-compose -f .docker/staging.yml up -d"
 
@@ -40,3 +39,6 @@ jobs:
 
     - name: Clean up SSH key
       run: rm -f key.pem
+
+    - name: Clean old images/container/volumes
+      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "docker system prune -a -f"
