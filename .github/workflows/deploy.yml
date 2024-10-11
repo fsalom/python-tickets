@@ -30,7 +30,10 @@ jobs:
         "
     - name: Install docker
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "curl -fsSL https://get.docker.com | sudo bash"
-      
+
+    - name: Install docker-compose
+      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "sudo apt-get update && sudo apt-get install docker-compose -y"
+
     - name: Deploy application using docker-compose
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "cd /root/app && docker-compose -f .docker/staging.yml up --build -d && docker-compose -f .docker/staging.yml up -d"
 
