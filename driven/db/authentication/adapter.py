@@ -10,15 +10,35 @@ from domain.user import User
 
 
 class AuthenticationDBRepositoryAdapter(AuthenticationDBRepositoryPort):
-    def logout(self):
-        pass
+
+    @staticmethod
+    def get_application(client_id) -> Application | None:
+        try:
+            application = Application.objects.get(client_id=client_id)
+            return application
+        except Application.DoesNotExist:
+            return None
+
+    @staticmethod
+    def get_expire_time() -> timedelta:
+        now = timezone.now()
+        expires = now + timedelta(seconds=oauth2_settings.ACCESS_TOKEN_EXPIRE_SECONDS)
+        return expires
+
+    def logout(self, user: User) -> bool:
+        try:
+            refresh_token = RefreshToken.objects.get(user=user)
+        except RefreshToken.DoesNotExist:
+            return False
+        refresh_token.revoke()
+        return True
+
 
     def refresh(self, refresh_token: str, client_id: str) -> Tokens | None:
         if refresh_token is None:
             return None
-        try:
-            application = Application.objects.get(client_id=client_id)
-        except Application.DoesNotExist:
+        application = self.get_application(client_id)
+        if application is None:
             return None
 
         try:
@@ -26,32 +46,45 @@ class AuthenticationDBRepositoryAdapter(AuthenticationDBRepositoryPort):
         except RefreshToken.DoesNotExist:
             return None
 
+        access_token = AccessToken.objects.create(
+            user=refresh_token.user,
+            application=application,
+            expires=self.get_expire_time(),
+            token=oauth2_settings.ACCESS_TOKEN_GENERATOR(),
+            scope="read write"
+        )
 
+        refresh_token.access_token = access_token
+        refresh_token.save()
+
+        return Tokens(
+            access_token=access_token.token,
+            refresh_token=refresh_token.token,
+            expires_in=oauth2_settings.ACCESS_TOKEN_EXPIRE_SECONDS,
+            token_type='Bearer',
+            scope=access_token.scope
+        )
 
     def login(self, username: str, password: str, client_id: str) -> Tokens | None:
         user = authenticate(username=username, password=password)
         if user is None:
             return None
 
-        try:
-            application = Application.objects.get(client_id=client_id)
-        except Application.DoesNotExist:
+        application = self.get_application(client_id)
+        if application is None:
             return None
-
-        now = timezone.now()
-        expires = now + timedelta(seconds=oauth2_settings.ACCESS_TOKEN_EXPIRE_SECONDS)
 
         access_token = AccessToken.objects.create(
             user=user,
             application=application,
-            expires=expires,
+            expires=self.get_expire_time(),
             token=oauth2_settings.ACCESS_TOKEN_GENERATOR(),
             scope="read write"
         )
 
         refresh_token = RefreshToken.objects.create(
             user=user,
-            token=oauth2_settings.REFRESH_TOKEN_GENERATOR(),  # Genera el refresh token
+            token=oauth2_settings.REFRESH_TOKEN_GENERATOR(),
             application=application,
             access_token=access_token,
         )
