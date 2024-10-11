@@ -12,8 +12,14 @@ class AuthenticationServices(AuthenticationServicePort):
                  db_repository: AuthenticationDBRepositoryPort):
         self.db_repository = db_repository
 
+    def refresh(self, refresh_token: str, client_id: str) -> Tokens | None:
+        return self.db_repository.refresh(refresh_token, client_id)
+
     def login(self, username: str, password: str, client_id: str) -> Tokens | None:
         return self.db_repository.login(username, password, client_id)
+
+    def logout(self, user: User):
+        return self.db_repository.logout(user)
 
     def get_user(self, token: str) -> User | None:
         user = self.db_repository.get_user(token)
