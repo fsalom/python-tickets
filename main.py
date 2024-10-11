@@ -3,7 +3,7 @@ import django
 
 
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'infrastructure.django.settings')
-django.setup()  # Asegura que las apps están listas
+django.setup()
 
 from fastapi import FastAPI
 from driving.api_rest.router.router import add_routers
