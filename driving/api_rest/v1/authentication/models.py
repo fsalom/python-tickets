@@ -25,3 +25,19 @@ class AuthenticationRequest(BaseModel):
             ]
         }
     }
+
+
+class AuthenticationRefreshRequest(BaseModel):
+    refresh_token: str
+    client_id: str
+
+    model_config = {
+        "json_schema_extra": {
+            "examples": [
+                {
+                    "refresh_token": "",
+                    "client_id": ""
+                }
+            ]
+        }
+    }
