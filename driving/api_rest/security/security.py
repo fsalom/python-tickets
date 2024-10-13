@@ -1,17 +1,17 @@
 from typing import Annotated
 from asgiref.sync import sync_to_async
+from dependency_injector.wiring import Provide, inject
 from fastapi import Depends, status, HTTPException
 from fastapi.security import OAuth2PasswordBearer
 
-from application.services.authentication_services import AuthenticationServices
-from infrastructure.di.authentication.injector import AuthenticationInjector
-
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
+from application.ports.driving.authentication_service_port import AuthenticationServicePort
+from infrastructure.di.authentication.container import AuthenticationContainer
 
 
-async def get_user_or_refuse(token: Annotated[str, Depends(oauth2_scheme)],
-                             authentication_service: AuthenticationServices
-                             = Depends(AuthenticationInjector().get_service)):
+@inject
+async def get_user_or_refuse(token: Annotated[str, Depends(OAuth2PasswordBearer(tokenUrl="token"))],
+                             authentication_service: AuthenticationServicePort
+                             = Depends(Provide[AuthenticationContainer.service])):
     user = await sync_to_async(authentication_service.get_user)(token)
     if user is None:
         raise HTTPException(
