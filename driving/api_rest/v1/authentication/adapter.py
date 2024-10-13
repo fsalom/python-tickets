@@ -1,5 +1,6 @@
 from typing import Annotated
 
+from dependency_injector.wiring import inject, Provide
 from fastapi import APIRouter, Depends, status
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
@@ -10,15 +11,16 @@ from driving.api_rest.security.security import get_user_or_refuse
 from driving.api_rest.v1.authentication.mapper import AuthenticationDTOMapper
 from driving.api_rest.v1.authentication.models import AuthenticationResponse, AuthenticationRequest, \
     AuthenticationRefreshRequest
-from infrastructure.di.authentication.injector import AuthenticationInjector
+from infrastructure.di.authentication.container import AuthenticationContainer
 
 auth_router = APIRouter()
 
 
 @auth_router.post('/login', status_code=200, response_model=AuthenticationResponse)
+@inject
 def auth(authentication_request: AuthenticationRequest,
          authentication_service: AuthenticationServicePort = Depends(
-             AuthenticationInjector().get_service
+             Provide[AuthenticationContainer.service]
          ),
          api_rest_mapper: AuthenticationDTOMapper = Depends(
              AuthenticationDTOMapper
@@ -36,9 +38,10 @@ def auth(authentication_request: AuthenticationRequest,
 
 
 @auth_router.post('/refresh', status_code=200, response_model=AuthenticationResponse)
+@inject
 def auth_refresh(authentication_request: AuthenticationRefreshRequest,
                  authentication_service: AuthenticationServicePort = Depends(
-                     AuthenticationInjector().get_service
+                     Provide[AuthenticationContainer.service]
                  ),
                  api_rest_mapper: AuthenticationDTOMapper = Depends(
                      AuthenticationDTOMapper
@@ -55,9 +58,10 @@ def auth_refresh(authentication_request: AuthenticationRefreshRequest,
 
 
 @auth_router.post('/logout', status_code=200, response_model=AuthenticationResponse)
+@inject
 def auth_logout(user: Annotated[User, Depends(get_user_or_refuse)],
                 authentication_service: AuthenticationServicePort = Depends(
-                    AuthenticationInjector().get_service
+                    Provide[AuthenticationContainer.service]
                 )
                 ) -> JSONResponse:
 
