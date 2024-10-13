@@ -6,9 +6,11 @@ from driven.db.authentication.adapter import AuthenticationDBRepositoryAdapter
 
 class AuthenticationContainer(containers.DeclarativeContainer):
     config = providers.Configuration()
-    #wiring_config = containers.WiringConfiguration(modules=["poc.di.driving.api_rest.adapters.example_controller_adapter"])
+    wiring_config = containers.WiringConfiguration(modules=["driving.api_rest.security.security",
+                                                            "driving.api_rest.v1.authentication.adapter"])
+    db_repository = providers.Singleton(AuthenticationDBRepositoryAdapter)
 
     service = providers.Factory(
         AuthenticationServices,
-        db_repository=AuthenticationDBRepositoryAdapter()
+        db_repository=db_repository
     )
