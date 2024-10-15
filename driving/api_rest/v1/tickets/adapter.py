@@ -5,10 +5,9 @@ from fastapi import APIRouter, Depends
 
 from application.ports.driving.tickets_service_port import TicketServicePort
 from infrastructure.di.tickets.container import TicketContainer
-from infrastructure.di.tickets.injector import TicketInjector
 from application.services.ticket_services import TicketServices
 from domain.user import User
-from driving.api_rest.security.security import get_user_or_refuse
+from driving.api_rest.security import get_user_or_refuse
 
 ticket_router = APIRouter()
 

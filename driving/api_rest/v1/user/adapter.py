@@ -1,7 +1,7 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends
 from domain.user import User
-from driving.api_rest.security.security import get_user_or_refuse
+from driving.api_rest.security import get_user_or_refuse
 
 user_router = APIRouter()
 

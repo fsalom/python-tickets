@@ -7,7 +7,7 @@ from fastapi.responses import JSONResponse
 
 from application.ports.driving.authentication_service_port import AuthenticationServicePort
 from domain.user import User
-from driving.api_rest.security.security import get_user_or_refuse
+from driving.api_rest.security import get_user_or_refuse
 from driving.api_rest.v1.authentication.mapper import AuthenticationDTOMapper
 from driving.api_rest.v1.authentication.models import AuthenticationResponse, AuthenticationRequest, \
     AuthenticationRefreshRequest
