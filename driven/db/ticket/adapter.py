@@ -82,7 +82,7 @@ class TicketDBRepositoryAdapter(TicketDBRepositoryPort):
                         iva=0.0,
                         date=str(ticket_dbo.date_raw),
                         email=ticket_dbo.email.email,
-                        location=ticket_dbo.location,
+                        location=ticket_dbo.location.location_info,
                     )
                 )
 
