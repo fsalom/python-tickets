@@ -58,9 +58,9 @@ class TicketDBRepositoryAdapter(TicketDBRepositoryPort):
         ticket_dbo.products.set(products_dbo)
 
     async def get_tickets_for(self, user: str) -> [Ticket]:
-        def _get_tickets(email: str) -> [Ticket]:
-            ticket_dbo_list = TicketDBO.objects.filter(email__email=user)
-            tickets = []
+        def _get_tickets(current_user) -> [Ticket]:
+            ticket_dbo_list = TicketDBO.objects.filter(email__email=current_user)
+            tickets_db = []
             for ticket_dbo in ticket_dbo_list:
                 ticket_products = TicketProductDBO.objects.filter(ticket=ticket_dbo)
 
@@ -74,7 +74,7 @@ class TicketDBRepositoryAdapter(TicketDBRepositoryPort):
                     )
                     for ticket_product_dbo in ticket_products
                 ]
-                tickets.append(
+                tickets_db.append(
                     Ticket(
                         id_ticket=ticket_dbo.id_ticket,
                         products=products,
