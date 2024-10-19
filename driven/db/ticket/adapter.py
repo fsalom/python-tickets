@@ -5,13 +5,14 @@ from domain.product import Product
 from domain.ticket import Ticket
 from driven.db.product.models import ProductDBO, ProductPriceHistoryDBO
 from driven.db.store.models import StoreDBO
+from driven.db.ticket.mapper import TicketDBMapper
 from driven.db.ticket.models import TicketDBO, TicketProductDBO
 from driven.db.user.models import UserDBO
 
 
 class TicketDBRepositoryAdapter(TicketDBRepositoryPort):
-    def __init__(self):
-        pass
+    def __init__(self, mapper: TicketDBMapper):
+        self.mapper = mapper
 
     def save(self, ticket: Ticket):
         products_dbo = []
@@ -60,33 +61,19 @@ class TicketDBRepositoryAdapter(TicketDBRepositoryPort):
     async def get_tickets_for(self, user: str) -> [Ticket]:
         def _get_tickets(current_user) -> [Ticket]:
             ticket_dbo_list = TicketDBO.objects.filter(email__email=current_user)
-            tickets_db = []
-            for ticket_dbo in ticket_dbo_list:
-                ticket_products = TicketProductDBO.objects.filter(ticket=ticket_dbo)
-
-                products = [
-                    Product(
-                        name=ticket_product_dbo.product.name,
-                        quantity=ticket_product_dbo.quantity,
-                        price_per_unit=ticket_product_dbo.history_price.price_per_unit,
-                        price=ticket_product_dbo.history_price.price,
-                        weight=None
-                    )
-                    for ticket_product_dbo in ticket_products
-                ]
-                tickets_db.append(
-                    Ticket(
-                        id_ticket=ticket_dbo.id_ticket,
-                        products=products,
-                        total=ticket_dbo.total,
-                        iva=0.0,
-                        date=str(ticket_dbo.date_raw),
-                        email=ticket_dbo.email.email,
-                        location=ticket_dbo.location.location_info,
-                    )
-                )
-
-            return tickets
+            return TicketDBMapper.to_dbos(ticket_dbo_list)
 
         tickets = await sync_to_async(_get_tickets)(user)
         return tickets
+
+    async def get_total_for(self, user: str, start_date: str, end_date: str) -> float:
+        pass
+
+    async def get_number_of_tickets_for(self, user: str, start_date: str, end_date: str) -> int:
+        pass
+
+    async def get_number_of_products_for(self, user: str, start_date: str, end_date: str) -> int:
+        pass
+
+    async def get_top_products_for(self, user: str, start_date: str, end_date: str, number: int = 10) -> [Product]:
+        pass
