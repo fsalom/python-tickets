@@ -9,13 +9,20 @@ class TicketContainer(containers.DeclarativeContainer):
     config = providers.Configuration()
     wiring_config = containers.WiringConfiguration(modules=["driving.api_rest.v1.tickets.adapter"])
 
-    db_repository = providers.Factory(TicketDBRepositoryAdapter)
+    db_mapper = providers.Factory(
+        TicketDTOMapper
+    )
+
+    db_repository = providers.Factory(
+        TicketDBRepositoryAdapter,
+        mapper=db_mapper,
+    )
 
     service = providers.Factory(
         TicketServices,
         db_repository=db_repository
     )
 
-    mapper = providers.Factory(
+    api_mapper = providers.Factory(
         TicketDTOMapper
     )

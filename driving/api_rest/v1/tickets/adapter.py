@@ -17,9 +17,18 @@ ticket_router = APIRouter()
 @inject
 async def me(user: Annotated[User, Depends(get_user_or_refuse)],
              service: TicketServicePort = Depends(Provide[TicketContainer.service]),
-             mapper: TicketDTOMapper = Depends(Provide[TicketContainer.mapper])):
+             api_mapper: TicketDTOMapper = Depends(Provide[TicketContainer.api_mapper])):
     tickets = await service.get_ticket_for_user(user=user.email)
-    return mapper.to_dto(tickets)
+    return api_mapper.to_dto(tickets)
+
+
+@ticket_router.get('/tickets/stats')
+@inject
+async def stats(user: Annotated[User, Depends(get_user_or_refuse)],
+                service: TicketServicePort = Depends(Provide[TicketContainer.service]),
+                api_mapper: TicketDTOMapper = Depends(Provide[TicketContainer.api_mapper])):
+    tickets = await service.get_ticket_for_user(user=user.email)
+    return api_mapper.to_dto(tickets)
 
 
 @ticket_router.get('/tickets/test')
