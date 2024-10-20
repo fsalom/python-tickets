@@ -15,36 +15,13 @@ class TicketDBRepositoryAdapter(TicketDBRepositoryPort):
         self.mapper = mapper
 
     def save(self, ticket: Ticket):
+        store_dbo = TicketDBMapper.map_store(ticket)
+        user_dbo = TicketDBMapper.map_user(ticket)
+        ticket_dbo = TicketDBMapper.map_ticket(ticket, store_dbo, user_dbo)
+
         products_dbo = []
-
-        store_dbo, created = StoreDBO.objects.get_or_create(
-            location_info=ticket.location
-        )
-
-        user_dbo, created = UserDBO.objects.get_or_create(
-            email=ticket.email,
-            username=ticket.email
-        )
-
-        ticket_dbo, created = TicketDBO.objects.get_or_create(
-            date_raw=ticket.date,
-            location=store_dbo,
-            email=user_dbo,
-            total=ticket.total,
-            id_ticket=ticket.id
-        )
-
         for product in ticket.products:
-            product_dbo, created = ProductDBO.objects.get_or_create(
-                name=product.name
-            )
-
-            product_history_price, created = ProductPriceHistoryDBO.objects.get_or_create(
-                product=product_dbo,
-                date_raw=ticket.date,
-                price=product.price,
-                price_per_unit=product.price_per_unit
-            )
+            product_dbo, product_history_price = TicketDBMapper.map_product(product, ticket.date)
 
             TicketProductDBO.objects.create(
                 ticket=ticket_dbo,
@@ -55,7 +32,6 @@ class TicketDBRepositoryAdapter(TicketDBRepositoryPort):
             )
 
             products_dbo.append(product_dbo)
-
         ticket_dbo.products.set(products_dbo)
 
     async def get_tickets_for(self, user: str) -> [Ticket]:
