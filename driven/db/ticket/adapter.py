@@ -18,20 +18,7 @@ class TicketDBRepositoryAdapter(TicketDBRepositoryPort):
         store_dbo = TicketDBMapper.map_store(ticket)
         user_dbo = TicketDBMapper.map_user(ticket)
         ticket_dbo = TicketDBMapper.map_ticket(ticket, store_dbo, user_dbo)
-
-        products_dbo = []
-        for product in ticket.products:
-            product_dbo, product_history_price = TicketDBMapper.map_product(product, ticket.date)
-
-            TicketProductDBO.objects.create(
-                ticket=ticket_dbo,
-                product=product_dbo,
-                quantity=product.quantity,
-                history_price=product_history_price,
-                units=product.price_per_unit
-            )
-
-            products_dbo.append(product_dbo)
+        products_dbo = TicketDBMapper.map_products_of_ticket(ticket_dbo, ticket.products, ticket.date)
         ticket_dbo.products.set(products_dbo)
 
     async def get_tickets_for(self, user: str) -> [Ticket]:
