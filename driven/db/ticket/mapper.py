@@ -2,7 +2,7 @@ from domain.product import Product
 from domain.ticket import Ticket
 from driven.db.product.models import ProductDBO, ProductPriceHistoryDBO
 from driven.db.store.models import StoreDBO
-from driven.db.ticket.models import TicketDBO
+from driven.db.ticket.models import TicketDBO, TicketProductDBO
 from driven.db.user.models import UserDBO
 
 
@@ -73,3 +73,20 @@ class TicketDBMapper:
             id_ticket=ticket.id
         )
         return ticket_dbo
+
+    @staticmethod
+    def map_products_of_ticket(ticket: TicketDBO, products: [Product], date: str) -> [ProductDBO]:
+        products_dbo = []
+        for product in products:
+            product_dbo, product_history_price = TicketDBMapper.map_product(product, date)
+
+            TicketProductDBO.objects.create(
+                ticket=ticket,
+                product=product_dbo,
+                quantity=product.quantity,
+                history_price=product_history_price,
+                units=product.price_per_unit
+            )
+
+            products_dbo.append(product_dbo)
+        return products_dbo
