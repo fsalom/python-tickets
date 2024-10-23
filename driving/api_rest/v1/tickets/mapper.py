@@ -1,3 +1,4 @@
+from domain.product import Product
 from domain.ticket import Ticket
 from driving.api_rest.v1.tickets.models import AllTicketsResponse, TicketResponse, ProductResponse
 
@@ -19,3 +20,7 @@ class TicketDTOMapper:
                     location=ticket.location
                 ) for ticket in tickets
             ])
+
+    @staticmethod
+    def products_to_dto(products: [Product]) -> [ProductResponse]:
+        return [ProductResponse(name=p.name, quantity=p.quantity, price=p.price) for p in products]
