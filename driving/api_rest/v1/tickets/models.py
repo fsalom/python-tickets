@@ -33,3 +33,13 @@ class AllTicketsResponse(BaseModel):
 
     class Config:
         arbitrary_types_allowed = True
+
+
+class StatsForTicketsResponse(BaseModel):
+    num_tickets: int
+    num_products: int
+    total: float
+    top_products: List[ProductResponse]
+
+    class Config:
+        arbitrary_types_allowed = True
