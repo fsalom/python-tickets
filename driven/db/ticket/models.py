@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.db import models
 
 from driven.db.product.models import ProductDBO, ProductPriceHistoryDBO
@@ -19,6 +21,19 @@ class TicketDBO(models.Model):
     )
     total = models.FloatField()
     id_ticket = models.CharField(max_length=50, unique=True)
+    date = models.DateField(null=True, blank=True)
+    time = models.TimeField(null=True, blank=True)
+
+    def save(self, *args, **kwargs):
+        if self.date_raw:
+            try:
+                parsed_datetime = datetime.strptime(self.date_raw, '%d/%m/%Y %H:%M')
+                self.date = parsed_datetime.date()
+                self.time = parsed_datetime.time()
+            except ValueError:
+                raise ValueError(f"Formato de date_raw incorrecto: {self.date_raw}")
+
+        super(TicketDBO, self).save(*args, **kwargs)
 
     def __str__(self):
         return f"Ticket {self.id}"
