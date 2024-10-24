@@ -6,8 +6,6 @@ import threading
 import time
 import django
 
-from infrastructure.di.tickets.container import TicketContainer
-
 
 def cronjob():
     sys.stdout.write("Starting cronjob\n")
@@ -20,9 +18,11 @@ def cronjob():
     from driven.mail.mail_repository_adapter import MailRepositoryAdapter
     from driving.mails.adapter import MailsAdapter
     from driven.db.mail.adapter import MailDBRepositoryAdapter
+    from driven.db.ticket.adapter import TicketDBRepositoryAdapter
+    from driven.db.ticket.mapper import TicketDBMapper
 
     mail_repository_adapter = MailRepositoryAdapter()
-    ticket_db_repository_adapter = TicketContainer.db_repository
+    ticket_db_repository_adapter = TicketDBRepositoryAdapter(mapper=TicketDBMapper())
     mail_db_repository_adapter = MailDBRepositoryAdapter()
 
     service = MailServices(mail_repository=mail_repository_adapter,
@@ -63,9 +63,11 @@ def test():
     from application.services.mail_services import MailServices
     from driven.mail.mail_repository_adapter import MailRepositoryAdapter
     from driven.db.mail.adapter import MailDBRepositoryAdapter
+    from driven.db.ticket.adapter import TicketDBRepositoryAdapter
+    from driven.db.ticket.mapper import TicketDBMapper
 
     mail_repository_adapter = MailRepositoryAdapter()
-    ticket_db_repository_adapter = TicketContainer.db_repository
+    ticket_db_repository_adapter = TicketDBRepositoryAdapter(mapper=TicketDBMapper())
     mail_db_repository_adapter = MailDBRepositoryAdapter()
 
     service = MailServices(mail_repository=mail_repository_adapter,
