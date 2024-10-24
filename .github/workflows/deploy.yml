@@ -48,8 +48,11 @@ jobs:
     - name: Change permissions for docker-compose
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "chmod +x /usr/local/bin/docker-compose"
 
-    - name: Clean old images/container/volumes
+    - name: Clean old images
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "docker image prune -a -f"
+
+    - name: Clean old volumes
+      run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "docker volume prune -a -f"
 
     - name: Deploy application using docker-compose
       run: ssh -o StrictHostKeyChecking=no -i key.pem root@"${{ secrets.DROPLET_IP }}" "cd /root/app && docker compose -f .docker/staging.yml up --build -d && docker compose -f .docker/staging.yml up -d"
